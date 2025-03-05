@@ -707,7 +707,7 @@ function generateAnimationCSS(animationType) {
         case 'zoom':
             return `zoom ${duration}s ease-in-out infinite`;
         case 'spin':
-            return `spin ${duration}s ease-in-out infinite`;
+            return `spin ${duration}s linear infinite`;
         case 'wiggle':
             return `wiggle ${duration}s ease-in-out infinite`;
         case 'squeeze':
