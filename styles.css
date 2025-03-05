@@ -716,3 +716,18 @@ textarea#imagePrompt {
     display: flex;
     gap: 10px;
 }
+
+.selection-settings {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.selection-settings label {
+    min-width: 120px;
+}
+
+.selection-settings input {
+    flex-grow: 1;
+}

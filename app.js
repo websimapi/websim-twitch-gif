@@ -19,6 +19,7 @@ let brushSize = 5;
 let brushColor = '#ffffff';
 let undoStack = [];
 let redoStack = [];
+let selectionTolerance = 30; // Add selection tolerance setting
 
 // Special effects selection
 document.querySelectorAll('.effect-option').forEach(option => {
@@ -144,7 +145,7 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             currentTool = option.dataset.tool;
             
             // Hide selection controls if not in selection mode
-            if (currentTool !== 'select' && currentTool !== 'magic-wand') {
+            if (currentTool !== 'magic-select') {
                 document.getElementById('selectionControls').classList.remove('active');
                 selectedArea = null;
                 // Clear overlay
@@ -152,7 +153,7 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             }
         });
     });
-    
+
     // Color selection
     document.querySelectorAll('.color-option').forEach(option => {
         option.addEventListener('click', () => {
@@ -190,12 +191,7 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
                 lastY = y;
                 break;
                 
-            case 'select':
-                isSelecting = true;
-                selectionStart = { x, y };
-                break;
-                
-            case 'magic-wand':
+            case 'magic-select':
                 magicWandSelect(editorCanvas, overlayCanvas, x, y);
                 break;
                 
@@ -225,43 +221,13 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             
             lastX = x;
             lastY = y;
-        } else if (isSelecting) {
-            // Draw selection rectangle
-            overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-            selectionEnd = { x, y };
-            
-            overlayCtx.strokeStyle = '#9147ff';
-            overlayCtx.lineWidth = 2;
-            overlayCtx.setLineDash([5, 5]);
-            
-            const width = selectionEnd.x - selectionStart.x;
-            const height = selectionEnd.y - selectionStart.y;
-            
-            overlayCtx.strokeRect(selectionStart.x, selectionStart.y, width, height);
         }
     });
     
-    overlayCanvas.addEventListener('mouseup', function() {
-        if (isDrawing) {
-            isDrawing = false;
-            saveToUndoStack(editorCanvas);
-        } else if (isSelecting) {
-            isSelecting = false;
-            
-            // Create selection area
-            const left = Math.min(selectionStart.x, selectionEnd.x);
-            const top = Math.min(selectionStart.y, selectionEnd.y);
-            const width = Math.abs(selectionEnd.x - selectionStart.x);
-            const height = Math.abs(selectionEnd.y - selectionStart.y);
-            
-            // Only create selection if it has size
-            if (width > 5 && height > 5) {
-                selectedArea = { left, top, width, height };
-                document.getElementById('selectionControls').classList.add('active');
-            } else {
-                overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-            }
-        }
+    // Add tolerance slider
+    document.getElementById('selectionTolerance').addEventListener('input', function() {
+        selectionTolerance = parseInt(this.value);
+        document.getElementById('toleranceValue').textContent = selectionTolerance;
     });
     
     // Selection controls
@@ -429,8 +395,8 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
         a: data[targetIndex + 3]
     };
     
-    // Tolerance for color matching
-    const tolerance = 30;
+    // Use the configurable tolerance
+    const tolerance = selectionTolerance;
     
     // Create a selection mask
     const mask = new Uint8Array(sourceCanvas.width * sourceCanvas.height);
