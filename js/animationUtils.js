@@ -86,3 +86,13 @@ function generateAnimationCSS(animation) {
             return 'none';
     }
 }
+
+function getImageSettings() {
+    return {
+        backgroundColor: document.getElementById('backgroundColorValue').textContent,
+        opacity: parseInt(document.getElementById('opacity').value),
+        scale: parseInt(document.getElementById('scale').value)
+    };
+}
+
+export { updateLivePreview, generateAnimationCSS, getImageSettings };
