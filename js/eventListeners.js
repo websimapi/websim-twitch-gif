@@ -101,7 +101,43 @@ function setupEventListeners() {
     const bgColorPicker = document.getElementById('backgroundColor');
     if (bgColorPicker) {
         bgColorPicker.addEventListener('input', function() {
-            document.getElementById('backgroundColorValue').textContent = this.value;
+            const alpha = parseInt(document.getElementById('backgroundAlpha').value);
+            const hex = this.value;
+            // Convert hex to rgba
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            const rgba = `rgba(${r}, ${g}, ${b}, ${alpha/255})`;
+            
+            document.getElementById('backgroundColorValue').textContent = rgba;
+            updateLivePreview();
+        });
+    }
+    
+    // Background alpha slider
+    const bgAlphaSlider = document.getElementById('backgroundAlpha');
+    if (bgAlphaSlider) {
+        bgAlphaSlider.addEventListener('input', function() {
+            const hex = document.getElementById('backgroundColor').value;
+            const alpha = parseInt(this.value);
+            document.getElementById('backgroundAlphaValue').textContent = alpha;
+            
+            // Convert hex to rgba
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            const rgba = `rgba(${r}, ${g}, ${b}, ${alpha/255})`;
+            
+            document.getElementById('backgroundColorValue').textContent = rgba;
+            updateLivePreview();
+        });
+    }
+    
+    // Toggle transparent background
+    const toggleTransparentBtn = document.getElementById('toggleTransparent');
+    if (toggleTransparentBtn) {
+        toggleTransparentBtn.addEventListener('click', function() {
+            document.getElementById('backgroundColorValue').textContent = 'transparent';
             updateLivePreview();
         });
     }

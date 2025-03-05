@@ -87,8 +87,9 @@ function generateAnimationCSS(animation) {
 }
 
 function getImageSettings() {
+    const bgColorValue = document.getElementById('backgroundColorValue').textContent;
     return {
-        backgroundColor: document.getElementById('backgroundColor').value,
+        backgroundColor: bgColorValue,
         opacity: parseInt(document.getElementById('opacity').value),
         scale: parseInt(document.getElementById('scale').value)
     };

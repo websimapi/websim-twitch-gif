@@ -95,6 +95,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .color-picker input[type="color"] {
@@ -104,6 +105,27 @@ body {
     border: none;
     background: none;
     cursor: pointer;
+}
+
+.small-button {
+    background: #464649;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.small-button:hover {
+    background: #626266;
+}
+
+.alpha-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
 }
 
 canvas {
