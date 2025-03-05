@@ -32,12 +32,35 @@ export function setupAnimationControls() {
     // Animation option selection
     document.querySelectorAll('.animation-option').forEach(option => {
         option.addEventListener('click', () => {
-            document.querySelectorAll('.animation-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            option.classList.add('selected');
-            selectedAnimation = option.dataset.animation;
-            updateLivePreview();
+            selectAnimation(option.dataset.animation);
+        });
+    });
+    
+    // Featured animation selection
+    document.querySelectorAll('.featured-animation').forEach(option => {
+        option.addEventListener('click', () => {
+            selectAnimation(option.dataset.animation);
+            // Scroll to the animation in the main list
+            const mainOption = document.querySelector(`.animation-option[data-animation="${option.dataset.animation}"]`);
+            if (mainOption) {
+                mainOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    });
+    
+    // Animation search
+    document.getElementById('animationSearch').addEventListener('input', filterAnimations);
+    document.getElementById('clearSearch').addEventListener('click', () => {
+        document.getElementById('animationSearch').value = '';
+        filterAnimations();
+    });
+    
+    // Animation category filtering
+    document.querySelectorAll('.category-tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+            document.querySelectorAll('.category-tag').forEach(t => t.classList.remove('active'));
+            tag.classList.add('active');
+            filterAnimations();
         });
     });
 
@@ -46,12 +69,14 @@ export function setupAnimationControls() {
         animationSpeed = parseFloat(this.value);
         document.getElementById('animationSpeedValue').textContent = `${animationSpeed.toFixed(1)}x`;
         updateLivePreview();
+        updatePreviewInfo();
     });
 
     document.getElementById('animationIntensity').addEventListener('input', function() {
         animationIntensity = parseInt(this.value);
         document.getElementById('animationIntensityValue').textContent = animationIntensity;
         updateLivePreview();
+        updatePreviewInfo();
     });
 
     // Update value displays
@@ -65,6 +90,74 @@ export function setupAnimationControls() {
 
     document.getElementById('duration').addEventListener('input', function() {
         document.getElementById('durationValue').textContent = `${this.value}s`;
+    });
+    
+    // Initialize animation categories
+    initializeAnimationCategories();
+}
+
+function selectAnimation(animation) {
+    document.querySelectorAll('.animation-option').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    
+    const option = document.querySelector(`.animation-option[data-animation="${animation}"]`);
+    if (option) {
+        option.classList.add('selected');
+    }
+    
+    selectedAnimation = animation;
+    updateLivePreview();
+    updatePreviewInfo();
+}
+
+function updatePreviewInfo() {
+    const nameElement = document.getElementById('currentAnimationName');
+    const paramsElement = document.getElementById('previewParameters');
+    
+    nameElement.textContent = selectedAnimation === 'none' ? 'No Animation' : 
+        selectedAnimation.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    
+    paramsElement.textContent = `Speed: ${animationSpeed.toFixed(1)}x | Intensity: ${animationIntensity}`;
+}
+
+function filterAnimations() {
+    const searchTerm = document.getElementById('animationSearch').value.toLowerCase();
+    const category = document.querySelector('.category-tag.active').dataset.category;
+    
+    document.querySelectorAll('.animation-option').forEach(option => {
+        const animationName = option.textContent.trim().toLowerCase();
+        const animationType = option.dataset.category || 'all';
+        
+        const matchesSearch = animationName.includes(searchTerm);
+        const matchesCategory = category === 'all' || animationType === category;
+        
+        option.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+    });
+}
+
+function initializeAnimationCategories() {
+    // Define categories for animations
+    const categories = {
+        basic: ['none', 'rotate', 'fade', 'pulse', 'flip', 'blink'],
+        bounce: ['bounce', 'bounce-around', 'bounce-flip', 'bounce-rotate', 'bounce-orbit', 'bounce-wave', 'micro-bounce', 'nano-bounce', 'tiny-bounce'],
+        rotate: ['rotate', 'spin', 'spiral', 'clock', 'pinwheel', 'spin-zoom', 'micro-spin', 'mini-rotate'],
+        scale: ['zoom', 'pulse', 'throb', 'squeeze', 'elastic', 'subtle-pulse', 'quick-pulse', 'subtle-throb'],
+        subtle: ['gentle-shake', 'tiny-jump', 'subtle-pulse', 'soft-wobble', 'micro-spin', 'light-flicker', 'smooth-slide', 'tiny-twist', 'soft-breathe', 'nano-bounce', 'subtle-wave', 'gentle-rock', 'micro-waggle', 'soft-vibrate', 'micro-float'],
+        special: ['rainbow', 'glitch', 'glitch-out', 'kaleidoscope', 'party-mode', 'neon-flash', 'color-pulse', 'tv-static', 'matrix', 'meteor', 'vvcool']
+    };
+    
+    // Assign categories to animation options
+    document.querySelectorAll('.animation-option').forEach(option => {
+        const animation = option.dataset.animation;
+        
+        // Find which category this animation belongs to
+        for (const [category, animations] of Object.entries(categories)) {
+            if (animations.includes(animation)) {
+                option.dataset.category = category;
+                break;
+            }
+        }
     });
 }
 

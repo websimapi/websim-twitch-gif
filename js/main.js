@@ -11,4 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEditorControls();
     setupGifGeneration();
     setupAIGeneration();
+    
+    // Set up initial preview info
+    document.getElementById('currentAnimationName').textContent = 'No Animation';
+    document.getElementById('previewParameters').textContent = 'Speed: 1x | Intensity: 5';
 });

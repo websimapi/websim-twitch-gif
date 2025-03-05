@@ -84,12 +84,16 @@
             </div>
         </div>
         
-        <div class="preview-wrapper">
+        <div class="preview-section">
             <div class="preview-container">
                 <canvas id="preview" width="112" height="112"></canvas>
             </div>
             <div class="live-preview" id="livePreview">
                 <canvas id="previewAnimation" width="112" height="112"></canvas>
+            </div>
+            <div class="preview-info">
+                <div class="animation-name" id="currentAnimationName">No Animation</div>
+                <div class="preview-parameters" id="previewParameters">Speed: 1x | Intensity: 5</div>
             </div>
         </div>
         <div class="controls">
@@ -145,6 +149,48 @@
             <button id="editImage">Edit Image</button>
             
             <label>Animation Style:</label>
+            <div class="animation-search">
+                <input type="text" id="animationSearch" placeholder="Search animations...">
+                <button id="clearSearch">Clear</button>
+            </div>
+            
+            <div class="animation-categories">
+                <div class="category-tag active" data-category="all">All</div>
+                <div class="category-tag" data-category="basic">Basic</div>
+                <div class="category-tag" data-category="bounce">Bounce</div>
+                <div class="category-tag" data-category="rotate">Rotate</div>
+                <div class="category-tag" data-category="scale">Scale</div>
+                <div class="category-tag" data-category="subtle">Subtle</div>
+                <div class="category-tag" data-category="special">Special Effects</div>
+            </div>
+            
+            <div class="featured-animations">
+                <div class="featured-animation" data-animation="rotate">
+                    <div class="featured-preview rotate-preview"></div>
+                    Rotate
+                </div>
+                <div class="featured-animation" data-animation="bounce">
+                    <div class="featured-preview bounce-preview"></div>
+                    Bounce
+                </div>
+                <div class="featured-animation" data-animation="fade">
+                    <div class="featured-preview fade-preview"></div>
+                    Fade
+                </div>
+                <div class="featured-animation" data-animation="pulse">
+                    <div class="featured-preview pulse-preview"></div>
+                    Pulse
+                </div>
+                <div class="featured-animation" data-animation="rainbow">
+                    <div class="featured-preview rainbow-preview"></div>
+                    Rainbow
+                </div>
+                <div class="featured-animation" data-animation="vvcool">
+                    <div class="featured-preview vvcool-preview"></div>
+                    VVCool
+                </div>
+            </div>
+            
             <div class="animation-options">
                 <div class="animation-option selected" data-animation="none">
                     <div class="animation-preview"></div>
