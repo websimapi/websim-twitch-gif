@@ -749,6 +749,26 @@ function generateAnimationCSS(animation) {
             return `glitch ${speed}s ease-in-out infinite`;
         case 'bounce-around':
             return `bounceAround ${speed}s ease-in-out infinite`;
+        case 'float':
+            return `float ${speed}s ease-in-out infinite`;
+        case 'spiral':
+            return `spiral ${speed}s linear infinite`;
+        case 'throb':
+            return `throb ${speed}s ease-in-out infinite`;
+        case 'heartbeat':
+            return `heartbeat ${speed}s ease-in-out infinite`;
+        case 'jello':
+            return `jello ${speed}s ease-in-out infinite`;
+        case 'pendulum':
+            return `pendulum ${speed}s ease-in-out infinite`;
+        case 'blink':
+            return `blink ${speed}s step-end infinite`;
+        case 'rainbow':
+            return `rainbow ${speed}s linear infinite`;
+        case 'tornado':
+            return `tornado ${speed}s ease-in-out infinite`;
+        case 'orbit':
+            return `orbit ${speed}s linear infinite`;
         default:
             return 'none';
     }
@@ -889,6 +909,68 @@ document.getElementById('generateGif').onclick = async function() {
                         }
                         
                         tempCtx.translate(xOffset, yOffset);
+                        break;
+                    case 'float':
+                        const floatY = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                        const floatRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(0, floatY);
+                        tempCtx.rotate(floatRotation);
+                        break;
+                    case 'spiral':
+                        const spiralRotation = progress * Math.PI * 2;
+                        const spiralScale = 0.5 + Math.abs(Math.sin(progress * Math.PI)) * 0.5 * intensityFactor;
+                        tempCtx.rotate(spiralRotation);
+                        tempCtx.scale(spiralScale, spiralScale);
+                        break;
+                    case 'throb':
+                        const throbScale = 1 + Math.sin(progress * Math.PI * 2) * 0.3 * intensityFactor;
+                        tempCtx.scale(throbScale, throbScale);
+                        tempCtx.globalAlpha = (settings.opacity / 100) * (0.8 + Math.sin(progress * Math.PI * 2) * 0.2);
+                        break;
+                    case 'heartbeat':
+                        const t = progress * 10 % 1;
+                        let heartbeatScale = 1;
+                        if (t < 0.1) heartbeatScale = 1.2 * intensityFactor;
+                        else if (t < 0.2) heartbeatScale = 1.1 * intensityFactor;
+                        else if (t < 0.3) heartbeatScale = 1.0;
+                        else if (t < 0.4) heartbeatScale = 1.25 * intensityFactor;
+                        else if (t < 0.5) heartbeatScale = 1.15 * intensityFactor;
+                        tempCtx.scale(heartbeatScale, heartbeatScale);
+                        break;
+                    case 'jello':
+                        const jelloProgress = progress * 4 % 1;
+                        const skewX = Math.sin(jelloProgress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
+                        const skewY = Math.sin(jelloProgress * Math.PI * 2) * 5 * intensityFactor * (Math.PI / 180);
+                        tempCtx.transform(1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0);
+                        break;
+                    case 'pendulum':
+                        const pendulumAngle = Math.sin(progress * Math.PI * 2) * 20 * intensityFactor * (Math.PI / 180);
+                        tempCtx.rotate(pendulumAngle);
+                        break;
+                    case 'blink':
+                        if ((progress * 2) % 1 < 0.5) {
+                            tempCtx.globalAlpha = 0;
+                        }
+                        break;
+                    case 'rainbow':
+                        // Rainbow effect is done via CSS, nothing to add here
+                        break;
+                    case 'tornado':
+                        const tornadoAngle = progress * Math.PI * 2;
+                        const tornadoScale = 0.6 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.4;
+                        const tornadoX = Math.sin(progress * Math.PI * 4) * 10 * intensityFactor;
+                        tempCtx.rotate(tornadoAngle);
+                        tempCtx.scale(tornadoScale, tornadoScale);
+                        tempCtx.translate(tornadoX, 0);
+                        break;
+                    case 'orbit':
+                        const orbitAngle = progress * Math.PI * 2;
+                        const orbitRadius = 15 * intensityFactor;
+                        tempCtx.translate(
+                            Math.cos(orbitAngle) * orbitRadius,
+                            Math.sin(orbitAngle) * orbitRadius
+                        );
+                        tempCtx.rotate(-orbitAngle);
                         break;
                 }
                 
