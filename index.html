@@ -9,6 +9,51 @@
     <div class="container">
         <h1>Twitch GIF Maker</h1>
         
+        <!-- Upload and AI Generation Section -->
+        <div class="top-controls">
+            <div class="accordion-panel" id="uploadPanel">
+                <div class="accordion-header">
+                    <h3>Upload Images</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                    <button id="editImage">Edit Image</button>
+                    <button id="clearCanvas">Clear</button>
+                </div>
+            </div>
+            
+            <div class="accordion-panel" id="aiGenerationPanel">
+                <div class="accordion-header">
+                    <h3>AI Image Generation</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="ai-generation-container">
+                        <div class="setting-item">
+                            <label for="imagePrompt">Image Description:</label>
+                            <textarea id="imagePrompt" placeholder="Describe the image you want to generate..."></textarea>
+                        </div>
+                        <div class="setting-item">
+                            <label for="aspectRatio">Aspect Ratio:</label>
+                            <select id="aspectRatio">
+                                <option value="1:1">1:1 (Square)</option>
+                                <option value="16:9">16:9</option>
+                                <option value="3:2">3:2</option>
+                                <option value="4:3">4:3</option>
+                            </select>
+                        </div>
+                        <div class="advanced-mode">
+                            <input type="checkbox" id="advancedMode">
+                            <label for="advancedMode">Advanced Mode (Let AI enhance your prompt)</label>
+                        </div>
+                        <button id="generateImage">Generate Image</button>
+                        <div id="generationStatus" class="generation-status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Image Editor Section -->
         <div class="settings-panel" id="imageEditorPanel" style="display: none;">
             <div class="settings-group">
@@ -130,10 +175,6 @@
                 </div>
             </div>
             
-            <label for="fileInput">Upload Images (PNG/JPG):</label>
-            <input type="file" id="fileInput" accept="image/*" multiple>
-            <button id="editImage">Edit Image</button>
-            
             <label>Animation Style:</label>
             <div class="animation-options">
                 <div class="animation-option selected" data-animation="none">
@@ -207,38 +248,10 @@
             <span id="durationValue">3s</span>
             
             <button id="generateGif">Generate GIF</button>
-            <button id="clearCanvas">Clear</button>
-        </div>
-        
-        <div class="settings-panel">
-            <div class="settings-group">
-                <h3>AI Image Generation</h3>
-                <div class="ai-generation-container">
-                    <div class="setting-item">
-                        <label for="imagePrompt">Image Description:</label>
-                        <textarea id="imagePrompt" placeholder="Describe the image you want to generate..."></textarea>
-                    </div>
-                    <div class="setting-item">
-                        <label for="aspectRatio">Aspect Ratio:</label>
-                        <select id="aspectRatio">
-                            <option value="1:1">1:1 (Square)</option>
-                            <option value="16:9">16:9</option>
-                            <option value="3:2">3:2</option>
-                            <option value="4:3">4:3</option>
-                        </select>
-                    </div>
-                    <div class="advanced-mode">
-                        <input type="checkbox" id="advancedMode">
-                        <label for="advancedMode">Advanced Mode (Let AI enhance your prompt)</label>
-                    </div>
-                    <button id="generateImage">Generate Image</button>
-                    <div id="generationStatus" class="generation-status"></div>
-                </div>
-            </div>
         </div>
     </div>
 
-<script src="app.js"></script>
+    <script type="module" src="js/main.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
