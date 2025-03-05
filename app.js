@@ -353,29 +353,68 @@ function cropSelection(canvas, area) {
 
 function fillSelection(canvas, area, color) {
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = color;
-    ctx.fillRect(area.left, area.top, area.width, area.height);
+    
+    // If we have a mask, use it for precise filling
+    if (area.mask) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const width = canvas.width;
+        
+        // Convert fill color hex to rgba
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        
+        for (let y = area.top; y < area.top + area.height; y++) {
+            for (let x = area.left; x < area.left + area.width; x++) {
+                const index = (y * width + x) * 4;
+                // Only fill pixels that are part of the selection mask
+                if (area.mask[y * width + x] === 1) {
+                    data[index] = r;
+                    data[index + 1] = g;
+                    data[index + 2] = b;
+                    // Preserve original alpha
+                }
+            }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+    } else {
+        // Fallback to simple rectangle filling
+        ctx.fillStyle = color;
+        ctx.fillRect(area.left, area.top, area.width, area.height);
+    }
 }
 
 function deleteSelection(canvas, area) {
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(area.left, area.top, area.width, area.height);
+    
+    // If we have a mask, use it for precise deletion
+    if (area.mask) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const width = canvas.width;
+        
+        for (let y = area.top; y < area.top + area.height; y++) {
+            for (let x = area.left; x < area.left + area.width; x++) {
+                const index = (y * width + x) * 4;
+                // Only set transparent pixels that are part of the selection mask
+                if (area.mask[y * width + x] === 1) {
+                    data[index + 3] = 0; // Set alpha to 0 (transparent)
+                }
+            }
+        }
+        
+        ctx.putImageData(imageData, 0, 0);
+    } else {
+        // Fallback to simple rectangle clearing
+        ctx.clearRect(area.left, area.top, area.width, area.height);
+    }
 }
 
 function makeSelectionTransparent(canvas, area) {
-    const ctx = canvas.getContext('2d');
-    
-    // Get image data from selection
-    const imageData = ctx.getImageData(area.left, area.top, area.width, area.height);
-    const data = imageData.data;
-    
-    // Make all pixels transparent (set alpha to 0)
-    for (let i = 0; i < data.length; i += 4) {
-        data[i + 3] = 0; // Alpha channel
-    }
-    
-    // Put the modified image data back
-    ctx.putImageData(imageData, area.left, area.top);
+    // Reuse deleteSelection as it already sets transparency
+    deleteSelection(canvas, area);
 }
 
 function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
@@ -385,9 +424,11 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     // Get image data
     const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
     const data = imageData.data;
+    const width = sourceCanvas.width;
+    const height = sourceCanvas.height;
     
     // Get the color at the selected point
-    const targetIndex = (y * sourceCanvas.width + x) * 4;
+    const targetIndex = (y * width + x) * 4;
     const targetColor = {
         r: data[targetIndex],
         g: data[targetIndex + 1],
@@ -395,110 +436,141 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
         a: data[targetIndex + 3]
     };
     
-    // Use the configurable tolerance
-    const tolerance = selectionTolerance;
-    
     // Create a selection mask
-    const mask = new Uint8Array(sourceCanvas.width * sourceCanvas.height);
+    const mask = new Uint8Array(width * height);
     
-    // Flood fill algorithm with stack size limiting and visit tracking
-    const stack = [{x, y}];
-    const visited = new Set(); // Track visited pixels to avoid duplicates
-    const maxStackSize = 10000; // Prevent infinite loops and browser hangs
+    // Queue for flood fill (more efficient than recursion)
+    const queue = [];
+    queue.push({x, y});
     
-    while (stack.length > 0 && stack.length < maxStackSize) {
-        const {x, y} = stack.pop();
+    // Mark initial pixel as processed
+    mask[y * width + x] = 1;
+    
+    // Process queue
+    while (queue.length > 0) {
+        // Get next pixel from queue
+        const pixel = queue.shift();
+        const px = pixel.x;
+        const py = pixel.y;
         
-        if (x < 0 || y < 0 || x >= sourceCanvas.width || y >= sourceCanvas.height)
-            continue;
+        // Check 4-connected neighbors
+        const neighbors = [
+            {x: px + 1, y: py},
+            {x: px - 1, y: py},
+            {x: px, y: py + 1},
+            {x: px, y: py - 1}
+        ];
         
-        const pixelPos = `${x},${y}`;
-        if (visited.has(pixelPos))
-            continue;
+        for (const neighbor of neighbors) {
+            const nx = neighbor.x;
+            const ny = neighbor.y;
             
-        visited.add(pixelPos);
-        
-        const index = y * sourceCanvas.width + x;
-        
-        if (mask[index] === 1)
-            continue;
-        
-        const pixelIndex = index * 4;
-        const pixelColor = {
-            r: data[pixelIndex],
-            g: data[pixelIndex + 1],
-            b: data[pixelIndex + 2],
-            a: data[pixelIndex + 3]
-        };
-        
-        // Check if colors are similar
-        if (
-            Math.abs(pixelColor.r - targetColor.r) <= tolerance &&
-            Math.abs(pixelColor.g - targetColor.g) <= tolerance &&
-            Math.abs(pixelColor.b - targetColor.b) <= tolerance &&
-            Math.abs(pixelColor.a - targetColor.a) <= tolerance
-        ) {
-            mask[index] = 1;
+            // Skip if outside canvas
+            if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
+                continue;
+            }
             
-            // Add adjacent pixels, only if not yet visited
-            if (!visited.has(`${x+1},${y}`)) stack.push({x: x + 1, y});
-            if (!visited.has(`${x-1},${y}`)) stack.push({x: x - 1, y});
-            if (!visited.has(`${x},${y+1}`)) stack.push({x, y: y + 1});
-            if (!visited.has(`${x},${y-1}`)) stack.push({x, y: y - 1});
-        }
-    }
-    
-    // Clear overlay and draw selection
-    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-    
-    // Create a selection path
-    const selection = createSelectionPath(mask, sourceCanvas.width, sourceCanvas.height);
-    
-    // Draw selection outline
-    overlayCtx.strokeStyle = '#9147ff';
-    overlayCtx.lineWidth = 2;
-    overlayCtx.setLineDash([5, 5]);
-    
-    if (selection) {
-        overlayCtx.stroke(selection.path);
-        selectedArea = selection.bounds;
-        document.getElementById('selectionControls').classList.add('active');
-    }
-}
-
-function createSelectionPath(mask, width, height) {
-    // Find bounds of selection
-    let minX = width, minY = height, maxX = 0, maxY = 0;
-    let hasSelection = false;
-    
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const index = y * width + x;
+            // Skip if already processed
+            const index = ny * width + nx;
             if (mask[index] === 1) {
-                minX = Math.min(minX, x);
-                minY = Math.min(minY, y);
-                maxX = Math.max(maxX, x);
-                maxY = Math.max(maxY, y);
-                hasSelection = true;
+                continue;
+            }
+            
+            // Get neighbor color
+            const pixelIndex = index * 4;
+            const pixelColor = {
+                r: data[pixelIndex],
+                g: data[pixelIndex + 1],
+                b: data[pixelIndex + 2],
+                a: data[pixelIndex + 3]
+            };
+            
+            // Calculate color difference using Euclidean distance
+            const colorDifference = Math.sqrt(
+                Math.pow(pixelColor.r - targetColor.r, 2) +
+                Math.pow(pixelColor.g - targetColor.g, 2) +
+                Math.pow(pixelColor.b - targetColor.b, 2) +
+                Math.pow(pixelColor.a - targetColor.a, 2)
+            );
+            
+            // Add to selection if similar enough
+            if (colorDifference <= selectionTolerance) {
+                mask[index] = 1;
+                queue.push({x: nx, y: ny});
             }
         }
     }
     
-    if (!hasSelection) return null;
+    // Clear the overlay
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     
-    // Create a path around the selection and visualize the selected pixels
-    const path = new Path2D();
-    const bounds = {
-        left: minX,
-        top: minY,
-        width: maxX - minX + 1,
-        height: maxY - minY + 1
-    };
+    // Find selection bounds
+    let minX = width, minY = height, maxX = 0, maxY = 0;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            if (mask[y * width + x] === 1) {
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+            }
+        }
+    }
     
-    // Draw a rectangle around the selection
-    path.rect(minX, minY, bounds.width, bounds.height);
+    // Draw the selection outline
+    overlayCtx.fillStyle = 'rgba(100, 100, 255, 0.3)';
+    overlayCtx.strokeStyle = '#9147ff';
+    overlayCtx.lineWidth = 2;
+    overlayCtx.setLineDash([5, 5]);
     
-    return { path, bounds };
+    // Create selection boundary path using marching squares algorithm
+    const boundaryPath = new Path2D();
+    let firstPoint = null;
+    
+    // Draw the mask-based selection
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            if (mask[y * width + x] === 1) {
+                overlayCtx.fillRect(x, y, 1, 1);
+                
+                // Check if this is a boundary pixel
+                const isLeftBoundary = x === 0 || mask[y * width + (x-1)] === 0;
+                const isRightBoundary = x === width-1 || mask[y * width + (x+1)] === 0;
+                const isTopBoundary = y === 0 || mask[(y-1) * width + x] === 0;
+                const isBottomBoundary = y === height-1 || mask[(y+1) * width + x] === 0;
+                
+                if (isLeftBoundary || isRightBoundary || isTopBoundary || isBottomBoundary) {
+                    if (!firstPoint) {
+                        firstPoint = {x, y};
+                        boundaryPath.moveTo(x, y);
+                    } else {
+                        boundaryPath.lineTo(x, y);
+                    }
+                }
+            }
+        }
+    }
+    
+    // Close the path if we found points
+    if (firstPoint) {
+        boundaryPath.closePath();
+        overlayCtx.stroke(boundaryPath);
+    }
+    
+    // Set the selected area if we found a valid selection
+    if (maxX >= minX && maxY >= minY) {
+        selectedArea = {
+            left: minX,
+            top: minY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1,
+            mask: mask
+        };
+        document.getElementById('selectionControls').classList.add('active');
+    } else {
+        selectedArea = null;
+        document.getElementById('selectionControls').classList.remove('active');
+    }
 }
 
 function fillArea(canvas, x, y, fillColor) {
