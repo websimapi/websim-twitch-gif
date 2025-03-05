@@ -108,30 +108,18 @@ let userFavorites = JSON.parse(localStorage.getItem('animationFavorites')) || []
 // Initialize selected animation
 let selectedAnimation = 'bounce';
 
-// Function to update the live preview with the selected animation
-function updateLivePreview() {
-    const previewCanvas = document.getElementById('previewAnimation');
-    const originalCanvas = document.getElementById('preview');
-    const ctx = previewCanvas.getContext('2d');
-    
-    // Clear animation canvas
-    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    
-    // Copy the original image
-    ctx.drawImage(originalCanvas, 0, 0);
-    
-    // Apply the selected animation class
-    const livePreview = document.getElementById('livePreview');
-    
-    // Remove all existing animation classes
-    const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
-    livePreview.classList.remove(...animationClasses);
-    
-    // Add the selected animation class
-    if (selectedAnimation && selectedAnimation !== 'none') {
-        livePreview.classList.add(`${selectedAnimation}-preview`);
-    }
-}
+// Tab functionality
+document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked tab and its content
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+    });
+});
 
 // Generate animation options with categories and favorites
 function populateAnimationOptions() {
@@ -223,19 +211,6 @@ function toggleFavorite(animationName) {
     populateAnimationOptions();
 }
 
-// Tab functionality
-document.querySelectorAll('.tab-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        // Remove active class from all tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked tab and its content
-        button.classList.add('active');
-        document.getElementById(button.dataset.tab).classList.add('active');
-    });
-});
-
 document.addEventListener('DOMContentLoaded', () => {
     // Call populateAnimationOptions to populate animation list
     populateAnimationOptions();
@@ -319,6 +294,31 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = loadEvent.target.result;
         };
         reader.readAsDataURL(file);
+    }
+    
+    // Update live preview function
+    function updateLivePreview() {
+        const previewCanvas = document.getElementById('preview');
+        const animationCanvas = document.getElementById('previewAnimation');
+        const ctx = animationCanvas.getContext('2d');
+        
+        // Clear animation canvas
+        ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
+        
+        // Copy the original image
+        ctx.drawImage(previewCanvas, 0, 0);
+        
+        // Apply the selected animation class
+        const livePreview = document.getElementById('livePreview');
+        
+        // Remove all existing animation classes
+        const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
+        livePreview.classList.remove(...animationClasses);
+        
+        // Add the selected animation class
+        if (selectedAnimation && selectedAnimation !== 'none') {
+            livePreview.classList.add(`${selectedAnimation}-preview`);
+        }
     }
     
     // Show values for range inputs
