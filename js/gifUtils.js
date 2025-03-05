@@ -28,7 +28,8 @@ async function generateGif() {
         quality,
         width: 112,
         height: 112,
-        workerScript: URL.createObjectURL(window.gifWorkerBlob)
+        workerScript: URL.createObjectURL(window.gifWorkerBlob),
+        transparent: settings.backgroundColor === 'transparent' ? 0x00FFFFFF : null
     });
 
     const tempCanvas = document.createElement('canvas');
@@ -162,4 +163,3 @@ async function generateGif() {
 }
 
 export { fetchGifWorker, generateGif };
-

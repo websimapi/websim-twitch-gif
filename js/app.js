@@ -34,6 +34,8 @@ function initializeApp() {
     document.getElementById('durationValue').textContent = '3s';
     document.getElementById('animationSpeedValue').textContent = '1x';
     document.getElementById('animationIntensityValue').textContent = '5';
+    document.getElementById('backgroundColor').value = 'transparent';
+    document.getElementById('backgroundColorValue').textContent = 'transparent';
     
     // Fetch the GIF worker script
     fetchGifWorker().then(blob => {
