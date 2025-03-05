@@ -108,29 +108,16 @@
                         <div class="setting-item">
                             <label for="opacity">Opacity (%)</label>
                             <input type="range" id="opacity" min="0" max="100" value="100">
-                            <span class="range-value"></span>
                         </div>
                         <div class="setting-item">
                             <label for="scale">Scale (%)</label>
                             <input type="range" id="scale" min="10" max="100" value="100">
-                            <span class="range-value"></span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="settings-group">
                     <h3>Animation Settings</h3>
-                    <div class="preview-toggle">
-                        <label class="toggle-label">Preview Mode:</label>
-                        <div class="toggle-switch">
-                            <input type="checkbox" id="previewMode">
-                            <label for="previewMode" class="toggle-label">
-                                <span class="toggle-option left">CSS</span>
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-option right">GIF</span>
-                            </label>
-                        </div>
-                    </div>
                     <div class="setting-item">
                         <label for="animationSpeed">Animation Speed</label>
                         <input type="range" id="animationSpeed" min="0.5" max="3" step="0.1" value="1">
@@ -140,6 +127,14 @@
                         <label for="animationIntensity">Animation Intensity</label>
                         <input type="range" id="animationIntensity" min="1" max="10" value="5">
                         <span id="animationIntensityValue">5</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="previewMode">Preview Mode</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="previewMode">
+                            <label for="previewMode">Use accurate GIF preview</label>
+                            <span class="toggle-description">CSS preview (fast) / GIF preview (accurate but slower)</span>
+                        </div>
                     </div>
                 </div>
                 <div class="settings-group">
