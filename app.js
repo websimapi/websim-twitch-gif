@@ -427,6 +427,11 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     const width = sourceCanvas.width;
     const height = sourceCanvas.height;
     
+    // Make sure the click is within canvas bounds
+    if (x < 0 || y < 0 || x >= width || y >= height) {
+        return;
+    }
+    
     // Get the color at the selected point
     const targetIndex = (y * width + x) * 4;
     const targetColor = {
@@ -439,6 +444,9 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     // Create a selection mask
     const mask = new Uint8Array(width * height);
     
+    // Use a smaller sample size for larger images to prevent stack overflow
+    const sampleStep = Math.max(1, Math.floor(Math.sqrt(width * height) / 100));
+    
     // Queue for flood fill (more efficient than recursion)
     const queue = [];
     queue.push({x, y});
@@ -446,57 +454,67 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     // Mark initial pixel as processed
     mask[y * width + x] = 1;
     
+    // Set a safety limit for queue size to prevent memory issues
+    const maxQueueSize = Math.min(width * height, 100000);
+    let processedPixels = 0;
+    
     // Process queue
-    while (queue.length > 0) {
+    while (queue.length > 0 && processedPixels < maxQueueSize) {
         // Get next pixel from queue
         const pixel = queue.shift();
         const px = pixel.x;
         const py = pixel.y;
+        processedPixels++;
         
-        // Check 4-connected neighbors
-        const neighbors = [
-            {x: px + 1, y: py},
-            {x: px - 1, y: py},
-            {x: px, y: py + 1},
-            {x: px, y: py - 1}
-        ];
-        
-        for (const neighbor of neighbors) {
-            const nx = neighbor.x;
-            const ny = neighbor.y;
-            
-            // Skip if outside canvas
-            if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
-                continue;
+        // Check 4-connected neighbors with step size for efficiency
+        for (let dy = -sampleStep; dy <= sampleStep; dy += sampleStep) {
+            for (let dx = -sampleStep; dx <= sampleStep; dx += sampleStep) {
+                if (dx === 0 && dy === 0) continue; // Skip center pixel
+                
+                const nx = px + dx;
+                const ny = py + dy;
+                
+                // Skip if outside canvas
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
+                    continue;
+                }
+                
+                // Skip if already processed
+                const index = ny * width + nx;
+                if (mask[index] === 1) {
+                    continue;
+                }
+                
+                // Get neighbor color
+                const pixelIndex = index * 4;
+                const pixelColor = {
+                    r: data[pixelIndex],
+                    g: data[pixelIndex + 1],
+                    b: data[pixelIndex + 2],
+                    a: data[pixelIndex + 3]
+                };
+                
+                // Calculate color difference using Euclidean distance
+                const colorDifference = Math.sqrt(
+                    Math.pow(pixelColor.r - targetColor.r, 2) +
+                    Math.pow(pixelColor.g - targetColor.g, 2) +
+                    Math.pow(pixelColor.b - targetColor.b, 2) +
+                    Math.pow(pixelColor.a - targetColor.a, 2)
+                );
+                
+                // Add to selection if similar enough
+                if (colorDifference <= selectionTolerance) {
+                    mask[index] = 1;
+                    queue.push({x: nx, y: ny});
+                    
+                    // Break early if queue gets too big
+                    if (queue.length > maxQueueSize) {
+                        break;
+                    }
+                }
             }
-            
-            // Skip if already processed
-            const index = ny * width + nx;
-            if (mask[index] === 1) {
-                continue;
-            }
-            
-            // Get neighbor color
-            const pixelIndex = index * 4;
-            const pixelColor = {
-                r: data[pixelIndex],
-                g: data[pixelIndex + 1],
-                b: data[pixelIndex + 2],
-                a: data[pixelIndex + 3]
-            };
-            
-            // Calculate color difference using Euclidean distance
-            const colorDifference = Math.sqrt(
-                Math.pow(pixelColor.r - targetColor.r, 2) +
-                Math.pow(pixelColor.g - targetColor.g, 2) +
-                Math.pow(pixelColor.b - targetColor.b, 2) +
-                Math.pow(pixelColor.a - targetColor.a, 2)
-            );
-            
-            // Add to selection if similar enough
-            if (colorDifference <= selectionTolerance) {
-                mask[index] = 1;
-                queue.push({x: nx, y: ny});
+            if (queue.length > maxQueueSize) {
+                break;
             }
         }
     }
@@ -506,59 +524,56 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     
     // Find selection bounds
     let minX = width, minY = height, maxX = 0, maxY = 0;
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
+    let foundPixels = false;
+    
+    // Scan in steps for efficiency
+    for (let y = 0; y < height; y += sampleStep) {
+        for (let x = 0; x < width; x += sampleStep) {
             if (mask[y * width + x] === 1) {
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
                 maxX = Math.max(maxX, x);
                 maxY = Math.max(maxY, y);
+                foundPixels = true;
             }
         }
     }
     
-    // Draw the selection outline
-    overlayCtx.fillStyle = 'rgba(100, 100, 255, 0.3)';
-    overlayCtx.strokeStyle = '#9147ff';
-    overlayCtx.lineWidth = 2;
-    overlayCtx.setLineDash([5, 5]);
+    // Fix bounds that may have been missed due to stepping
+    minX = Math.max(0, minX - sampleStep);
+    minY = Math.max(0, minY - sampleStep);
+    maxX = Math.min(width - 1, maxX + sampleStep);
+    maxY = Math.min(height - 1, maxY + sampleStep);
     
-    // Create selection boundary path using marching squares algorithm
-    const boundaryPath = new Path2D();
-    let firstPoint = null;
-    
-    // Draw the mask-based selection
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            if (mask[y * width + x] === 1) {
-                overlayCtx.fillRect(x, y, 1, 1);
-                
-                // Check if this is a boundary pixel
-                const isLeftBoundary = x === 0 || mask[y * width + (x-1)] === 0;
-                const isRightBoundary = x === width-1 || mask[y * width + (x+1)] === 0;
-                const isTopBoundary = y === 0 || mask[(y-1) * width + x] === 0;
-                const isBottomBoundary = y === height-1 || mask[(y+1) * width + x] === 0;
-                
-                if (isLeftBoundary || isRightBoundary || isTopBoundary || isBottomBoundary) {
-                    if (!firstPoint) {
-                        firstPoint = {x, y};
-                        boundaryPath.moveTo(x, y);
-                    } else {
-                        boundaryPath.lineTo(x, y);
-                    }
+    // Draw the selection as a semi-transparent overlay
+    if (foundPixels) {
+        // Create a temporary canvas for the selection to avoid performance issues
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = overlayCanvas.width;
+        tempCanvas.height = overlayCanvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Fill selected pixels with a semi-transparent color
+        tempCtx.fillStyle = 'rgba(100, 100, 255, 0.3)';
+        
+        for (let y = minY; y <= maxY; y++) {
+            for (let x = minX; x <= maxX; x++) {
+                if (mask[y * width + x] === 1) {
+                    tempCtx.fillRect(x, y, 1, 1);
                 }
             }
         }
-    }
-    
-    // Close the path if we found points
-    if (firstPoint) {
-        boundaryPath.closePath();
-        overlayCtx.stroke(boundaryPath);
-    }
-    
-    // Set the selected area if we found a valid selection
-    if (maxX >= minX && maxY >= minY) {
+        
+        // Draw the temporary canvas onto the overlay
+        overlayCtx.drawImage(tempCanvas, 0, 0);
+        
+        // Draw a simple rectangular outline instead of complex path
+        overlayCtx.strokeStyle = '#9147ff';
+        overlayCtx.lineWidth = 2;
+        overlayCtx.setLineDash([5, 5]);
+        overlayCtx.strokeRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
+        
+        // Set the selected area if we found a valid selection
         selectedArea = {
             left: minX,
             top: minY,
