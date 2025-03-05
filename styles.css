@@ -79,109 +79,6 @@ h1 {
     position: relative;
 }
 
-.live-preview canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.live-preview.rotate-preview { animation: rotate 2s linear infinite; }
-.live-preview.bounce-preview { animation: bounce 1s ease-in-out infinite; }
-.live-preview.fade-preview { animation: fade 1s ease-in-out infinite; }
-.live-preview.shake-preview { animation: shake 0.5s ease-in-out infinite; }
-.live-preview.pulse-preview { animation: pulse 1s ease-in-out infinite; }
-.live-preview.flip-preview { animation: flip 1.5s ease-in-out infinite; }
-.live-preview.swing-preview { animation: swing 1.5s ease-in-out infinite; }
-.live-preview.zoom-preview { animation: zoom 1.5s ease-in-out infinite; }
-.live-preview.spin-preview { animation: spin 1.5s ease-in-out infinite; }
-.live-preview.wiggle-preview { animation: wiggle 1s ease-in-out infinite; }
-.live-preview.squeeze-preview { animation: squeeze 1.5s ease-in-out infinite; }
-.live-preview.slide-preview { animation: slide 1.5s ease-in-out infinite; }
-.live-preview.glitch-preview { animation: glitch 1.5s ease-in-out infinite; }
-.live-preview.bounce-around-preview { animation: bounceAround 2s ease-in-out infinite; }
-.live-preview.float-preview { animation: float 3s ease-in-out infinite; }
-.live-preview.spiral-preview { animation: spiral 2s linear infinite; }
-.live-preview.throb-preview { animation: throb 1.5s ease-in-out infinite; }
-.live-preview.heartbeat-preview { animation: heartbeat 1.5s ease-in-out infinite; }
-.live-preview.jello-preview { animation: jello 1s ease-in-out infinite; }
-.live-preview.pendulum-preview { animation: pendulum 2s ease-in-out infinite; }
-.live-preview.blink-preview { animation: blink 1s step-end infinite; }
-.live-preview.rainbow-preview { animation: rainbow 3s linear infinite; background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet); }
-.live-preview.tornado-preview { animation: tornado 1.5s ease-in-out infinite; }
-.live-preview.orbit-preview { animation: orbit 2s linear infinite; }
-.live-preview.pixelate-preview { animation: pixelate 2s ease-in-out infinite; }
-.live-preview.sway-preview { animation: sway 2s ease-in-out infinite; }
-.live-preview.ripple-preview { animation: ripple 2s ease-in-out infinite; }
-.live-preview.split-shift-preview { animation: splitShift 2s ease-in-out infinite; }
-.live-preview.confetti-preview { animation: confetti 1.5s linear infinite; }
-.live-preview.wave-preview { animation: wave 2s ease-in-out infinite; }
-.live-preview.jump-rope-preview { animation: jumpRope 1.5s ease-in-out infinite; }
-.live-preview.typewriter-preview { animation: typewriter 2s steps(8, end) infinite; }
-.live-preview.bounce-flip-preview { animation: bounceFlip 2s ease-in-out infinite; }
-.live-preview.dizzy-preview { animation: dizzy 1.5s ease-in-out infinite; }
-.live-preview.dance-preview { animation: dance 1.5s ease-in-out infinite; }
-.live-preview.elastic-preview { animation: elastic 1.5s cubic-bezier(.68,-0.55,.27,1.55) infinite; }
-.live-preview.shadow-play-preview { animation: shadowPlay 2s ease-in-out infinite; }
-.live-preview.bounce-rotate-preview { animation: bounceRotate 2s ease-in-out infinite; }
-.live-preview.party-mode-preview { animation: partyMode 1.5s ease-in-out infinite; }
-.live-preview.rolling-preview { animation: rolling 2s ease-in-out infinite; }
-.live-preview.kaleidoscope-preview { animation: kaleidoscope 2s linear infinite; }
-.live-preview.wobble-preview { animation: wobble 1.5s ease-in-out infinite; }
-.live-preview.teleport-preview { animation: teleport 2s ease-in-out infinite; }
-.live-preview.pinwheel-preview { animation: pinwheel 1.5s linear infinite; }
-.live-preview.bounce-orbit-preview { animation: bounceOrbit 2s ease-in-out infinite; }
-.live-preview.vvcool-preview { animation: vvcool 0.5s linear infinite; }
-.live-preview.neon-flash-preview { animation: neonFlash 1s linear infinite; box-shadow: 0 0 8px #00ffff; }
-.live-preview.spin-zoom-preview { animation: spinZoom 1.5s ease-in-out infinite; }
-.live-preview.bounce-wave-preview { animation: bounceWave 2s ease-in-out infinite; }
-.live-preview.micro-bounce-preview { animation: microBounce 1s ease-in-out infinite; }
-.live-preview.shatter-preview { animation: shatter 2s ease-in-out infinite; }
-.live-preview.clock-preview { animation: clock 2s linear infinite; }
-.live-preview.slime-preview { animation: slime 2s ease-in-out infinite; }
-.live-preview.paper-plane-preview { animation: paperPlane 3s ease-in-out infinite; }
-.live-preview.bubble-pop-preview { animation: bubblePop 2s ease-in-out infinite; }
-.live-preview.vibrate-preview { animation: vibrate 0.3s linear infinite; }
-.live-preview.firework-preview { animation: firework 2s ease-out infinite; }
-.live-preview.magnet-preview { animation: magnet 2s ease-in-out infinite; }
-.live-preview.pulse-rings-preview { animation: pulseRings 2s ease-in-out infinite; }
-.live-preview.drip-preview { animation: drip 2s ease-in-out infinite; }
-.live-preview.ricochet-preview { animation: ricochet 1.5s ease-in-out infinite; }
-.live-preview.flip-3d-preview { animation: flip3D 2s ease-in-out infinite; }
-.live-preview.thunder-preview { animation: thunder 2s ease-in-out infinite; }
-.live-preview.tv-static-preview { animation: tvStatic 0.5s step-end infinite; }
-.live-preview.flip-coin-preview { animation: flipCoin 2s linear infinite; }
-.live-preview.matrix-preview { animation: matrix 1.5s step-end infinite; }
-.live-preview.meteor-preview { animation: meteor 2s linear infinite; }
-.live-preview.pendulum-wave-preview { animation: pendulumWave 3s ease-in-out infinite; }
-.live-preview.tumbleweed-preview { animation: tumbleweed 3s linear infinite; }
-.live-preview.diagonal-shake-preview { animation: diagonal-shake 1.5s ease-in-out infinite; }
-.live-preview.diagonal-jitter-preview { animation: diagonal-jitter 1.3s ease-in-out infinite; }
-.live-preview.diagonal-pulse-shake-preview { animation: diagonal-pulse-shake 1.5s ease-in-out infinite; }
-.live-preview.diagonal-zigzag-preview { animation: diagonal-zigzag 1.5s ease-in-out infinite; }
-.live-preview.diagonal-wave-shake-preview { animation: diagonal-wave-shake 1.5s ease-in-out infinite; }
-.live-preview.gentle-shake-preview { animation: gentleShake 1.5s ease-in-out infinite; }
-.live-preview.tiny-jump-preview { animation: tinyJump 1.5s ease-in-out infinite; }
-.live-preview.subtle-pulse-preview { animation: subtlePulse 1.5s ease-in-out infinite; }
-.live-preview.soft-wobble-preview { animation: softWobble 1.5s ease-in-out infinite; }
-.live-preview.micro-spin-preview { animation: microSpin 1.5s linear infinite; }
-.live-preview.mini-orbit-preview { animation: miniOrbit 2s ease-in-out infinite; }
-.live-preview.light-flicker-preview { animation: lightFlicker 2s step-end infinite; }
-.live-preview.smooth-slide-preview { animation: smoothSlide 2s ease-in-out infinite; }
-.live-preview.tiny-twist-preview { animation: tinyTwist 1.5s ease-in-out infinite; }
-.live-preview.quick-pulse-preview { animation: quickPulse 1s ease-in-out infinite; }
-.live-preview.mini-rotate-preview { animation: miniRotate 2s linear infinite; }
-.live-preview.soft-breathe-preview { animation: softBreathe 2s ease-in-out infinite; }
-.live-preview.nano-bounce-preview { animation: nanoBounce 1.5s ease-in-out infinite; }
-.live-preview.subtle-wave-preview { animation: subtleWave 2s ease-in-out infinite; }
-.live-preview.gentle-rock-preview { animation: gentleRock 2s ease-in-out infinite; }
-.live-preview.tiny-bounce-preview { animation: tinyBounce 1.5s ease-in-out infinite; }
-.live-preview.micro-waggle-preview { animation: microWaggle 1.5s ease-in-out infinite; }
-.live-preview.soft-vibrate-preview { animation: softVibrate 1s linear infinite; }
-.live-preview.micro-float-preview { animation: microFloat 2s ease-in-out infinite; }
-.live-preview.subtle-throb-preview { animation: subtleThrob 1.5s ease-in-out infinite; }
-
 .preview-label {
     position: absolute;
     bottom: -25px;
@@ -618,6 +515,82 @@ h1 {
     background: #9147ff;
 }
 
+/* Animation previews */
+.rotate-preview::after { 
+    animation: rotate 2s linear infinite; 
+    transform-origin: center center;
+}
+.bounce-preview::after { animation: bounce 1s ease-in-out infinite; }
+.fade-preview::after { animation: fade 1s ease-in-out infinite; }
+.shake-preview::after { animation: shake 0.5s ease-in-out infinite; }
+.pulse-preview::after { animation: pulse 1s ease-in-out infinite; }
+.flip-preview::after { animation: flip 1.5s ease-in-out infinite; }
+.swing-preview::after { animation: swing 1.5s ease-in-out infinite; }
+.zoom-preview::after { animation: zoom 1.5s ease-in-out infinite; }
+.spin-preview::after { animation: spin 1.5s ease-in-out infinite; }
+.wiggle-preview::after { animation: wiggle 1s ease-in-out infinite; }
+.squeeze-preview::after { animation: squeeze 1.5s ease-in-out infinite; }
+.slide-preview::after { animation: slide 1.5s ease-in-out infinite; }
+.glitch-preview::after { animation: glitch 1.5s ease-in-out infinite; }
+.bounce-around-preview::after { animation: bounceAround 2s ease-in-out infinite; }
+.float-preview::after { animation: float 3s ease-in-out infinite; }
+.spiral-preview::after { animation: spiral 2s linear infinite; }
+.throb-preview::after { animation: throb 1.5s ease-in-out infinite; }
+.heartbeat-preview::after { animation: heartbeat 1.5s ease-in-out infinite; }
+.jello-preview::after { animation: jello 1s ease-in-out infinite; }
+.pendulum-preview::after { animation: pendulum 2s ease-in-out infinite; }
+.blink-preview::after { animation: blink 1s step-end infinite; }
+.rainbow-preview::after { animation: rainbow 3s linear infinite; background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet); }
+.tornado-preview::after { animation: tornado 1.5s ease-in-out infinite; }
+.orbit-preview::after { animation: orbit 2s linear infinite; }
+.pixelate-preview::after { animation: pixelate 2s ease-in-out infinite; }
+.diagonal-bounce-preview::after { animation: diagonalBounce 2s ease-in-out infinite; }
+.sway-preview::after { animation: sway 2s ease-in-out infinite; }
+.ripple-preview::after { animation: ripple 2s ease-in-out infinite; }
+.split-shift-preview::after { animation: splitShift 2s ease-in-out infinite; }
+.confetti-preview::after { animation: confetti 1.5s linear infinite; }
+.wave-preview::after { animation: wave 2s ease-in-out infinite; }
+.jump-rope-preview::after { animation: jumpRope 1.5s ease-in-out infinite; }
+.typewriter-preview::after { animation: typewriter 2s steps(8, end) infinite; }
+.bounce-flip-preview::after { animation: bounceFlip 2s ease-in-out infinite; }
+.dizzy-preview::after { animation: dizzy 1.5s ease-in-out infinite; }
+.dance-preview::after { animation: dance 1.5s ease-in-out infinite; }
+.elastic-preview::after { animation: elastic 1.5s cubic-bezier(.68,-0.55,.27,1.55) infinite; }
+.shadow-play-preview::after { animation: shadowPlay 2s ease-in-out infinite; }
+.bounce-rotate-preview::after { animation: bounceRotate 2s ease-in-out infinite; }
+.party-mode-preview::after { animation: partyMode 1.5s ease-in-out infinite; }
+.rolling-preview::after { animation: rolling 2s ease-in-out infinite; }
+.kaleidoscope-preview::after { animation: kaleidoscope 2s linear infinite; }
+.wobble-preview::after { animation: wobble 1.5s ease-in-out infinite; }
+.teleport-preview::after { animation: teleport 2s ease-in-out infinite; }
+.pinwheel-preview::after { animation: pinwheel 1.5s linear infinite; }
+.bounce-orbit-preview::after { animation: bounceOrbit 2s ease-in-out infinite; }
+.vvcool-preview::after { animation: vvcool 0.5s linear infinite; }
+.neon-flash-preview::after { animation: neonFlash 1s linear infinite; box-shadow: 0 0 8px #00ffff; }
+.spin-zoom-preview::after { animation: spinZoom 1.5s ease-in-out infinite; }
+.bounce-wave-preview::after { animation: bounceWave 2s ease-in-out infinite; }
+
+.micro-bounce-preview::after { animation: microBounce 1s ease-in-out infinite; }
+.shatter-preview::after { animation: shatter 2s ease-in-out infinite; }
+.clock-preview::after { animation: clock 2s linear infinite; }
+.slime-preview::after { animation: slime 2s ease-in-out infinite; }
+.paper-plane-preview::after { animation: paperPlane 3s ease-in-out infinite; }
+.bubble-pop-preview::after { animation: bubblePop 2s ease-in-out infinite; }
+.vibrate-preview::after { animation: vibrate 0.3s linear infinite; }
+.firework-preview::after { animation: firework 2s ease-out infinite; }
+.magnet-preview::after { animation: magnet 2s ease-in-out infinite; }
+.pulse-rings-preview::after { animation: pulseRings 2s ease-in-out infinite; }
+.drip-preview::after { animation: drip 2s ease-in-out infinite; }
+.ricochet-preview::after { animation: ricochet 1.5s ease-in-out infinite; }
+.flip-3d-preview::after { animation: flip3D 2s ease-in-out infinite; }
+.thunder-preview::after { animation: thunder 2s ease-in-out infinite; }
+.tv-static-preview::after { animation: tvStatic 0.5s step-end infinite; }
+.flip-coin-preview::after { animation: flipCoin 2s linear infinite; }
+.matrix-preview::after { animation: matrix 1.5s step-end infinite; }
+.meteor-preview::after { animation: meteor 2s linear infinite; }
+.pendulum-wave-preview::after { animation: pendulumWave 3s ease-in-out infinite; }
+.tumbleweed-preview::after { animation: tumbleweed 3s linear infinite; }
+
 /* Base animation keyframes */
 @keyframes rotate {
     from { transform: rotate(0deg); }
@@ -993,10 +966,10 @@ h1 {
 }
 
 @keyframes liquid {
-    0%, 100% { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; transform: scale(1); }
-    25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: scale(0.9); }
-    50% { border-radius: 20% 40% 50% 60% / 30% 60% 70% 40%; transform: scale(1.1); }
-    75% { border-radius: 40% 60% 50% 40% / 60% 30% 60% 30%; transform: scale(0.9); }
+    0%, 100% { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; }
+    25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    50% { border-radius: 20% 40% 50% 60% / 30% 60% 70% 40%; }
+    75% { border-radius: 40% 60% 50% 40% / 60% 30% 60% 30%; }
 }
 
 @keyframes warpDrive {
