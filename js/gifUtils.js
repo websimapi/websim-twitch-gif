@@ -18,6 +18,19 @@ async function generateGif() {
         return;
     }
 
+    // Check if worker blob is available
+    if (!window.gifWorkerBlob) {
+        try {
+            window.gifWorkerBlob = await fetchGifWorker();
+            if (!window.gifWorkerBlob) {
+                throw new Error('Failed to load GIF worker');
+            }
+        } catch (error) {
+            alert('Error loading GIF worker: ' + error.message);
+            return;
+        }
+    }
+
     const fps = parseInt(document.getElementById('fps').value);
     const quality = parseInt(document.getElementById('quality').value);
     const duration = parseInt(document.getElementById('duration').value);
