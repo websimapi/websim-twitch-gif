@@ -6,6 +6,7 @@ let selectedAnimation = 'none';
 let animationIntensity = 5;
 let animationSpeed = 1;
 let rainbowEffect = false;
+let depthEffect = false;
 
 // Image editor variables
 let isEditing = false;
@@ -19,39 +20,33 @@ let brushColor = '#ffffff';
 let undoStack = [];
 let redoStack = [];
 
-// Animation option selection
-document.querySelectorAll('.animation-option').forEach(option => {
+// Special effects selection
+document.querySelectorAll('.effect-option').forEach(option => {
     option.addEventListener('click', () => {
-        // Skip if it's the rainbow effect option
-        if (option.dataset.animation === 'rainbow-effect') {
+        const effect = option.dataset.effect;
+        
+        if (effect === 'rainbow') {
             rainbowEffect = !rainbowEffect;
             option.classList.toggle('selected');
-            updateLivePreview();
-            return;
+        } else if (effect === '3d-depth') {
+            depthEffect = !depthEffect;
+            option.classList.toggle('selected');
         }
         
-        document.querySelectorAll('.animation-option').forEach(opt => {
-            if (opt.dataset.animation !== 'rainbow-effect') {
-                opt.classList.remove('selected');
-            }
-        });
-        option.classList.add('selected');
-        selectedAnimation = option.dataset.animation;
         updateLivePreview();
     });
 });
 
-// Effect category tabs
-document.querySelectorAll('.category-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        // Remove active class from all tabs and content
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
-        
-        // Add active class to clicked tab and its content
-        tab.classList.add('active');
-        const category = tab.dataset.category;
-        document.querySelector(`.category-content[data-category="${category}"]`).classList.add('active');
+// Animation option selection
+document.querySelectorAll('.animation-option').forEach(option => {
+    option.addEventListener('click', () => {
+        // Remove rainbow-effect since it's now in special effects
+        document.querySelectorAll('.animation-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        option.classList.add('selected');
+        selectedAnimation = option.dataset.animation;
+        updateLivePreview();
     });
 });
 
@@ -736,124 +731,86 @@ function updateLivePreview() {
     // Restore the original context state
     ctx.restore();
     
-    // Apply animation to the canvas through CSS (simpler approach)
+    // Apply animation to the canvas through CSS
     if (selectedAnimation !== 'none') {
         const animationCSS = generateAnimationCSS(selectedAnimation);
         previewCanvas.style.animation = animationCSS;
         previewCanvas.style.transformOrigin = 'center center';
-        
-        // Apply rainbow effect if enabled (separate from animation)
-        if (rainbowEffect) {
-            previewCanvas.style.filter = 'hue-rotate(0deg)';
+    }
+    
+    // Apply special effects if enabled
+    let filters = [];
+    
+    // Apply rainbow effect if enabled (separate from animation)
+    if (rainbowEffect) {
+        if (previewCanvas.style.animation) {
             previewCanvas.style.animation = `${previewCanvas.style.animation}, rainbow ${(1 / animationSpeed).toFixed(1)}s linear infinite`;
+        } else {
+            previewCanvas.style.animation = `rainbow ${(1 / animationSpeed).toFixed(1)}s linear infinite`;
         }
+        filters.push('hue-rotate(0deg)');
+    }
+    
+    // Apply 3D depth effect if enabled
+    if (depthEffect) {
+        previewCanvas.style.transformStyle = 'preserve-3d';
+        previewCanvas.style.perspective = '500px';
+        if (previewCanvas.style.animation) {
+            previewCanvas.style.animation = `${previewCanvas.style.animation}, 3d-depth ${(1 / animationSpeed).toFixed(1)}s ease-in-out infinite`;
+        } else {
+            previewCanvas.style.animation = `3d-depth ${(1 / animationSpeed).toFixed(1)}s ease-in-out infinite`;
+        }
+        
+        // Add depth filter effects
+        filters.push('drop-shadow(0 5px 15px rgba(0,0,0,0.5))');
+    }
+    
+    // Apply combined filters
+    if (filters.length > 0) {
+        previewCanvas.style.filter = filters.join(' ');
     }
 }
 
-function generateAnimationCSS(animation) {
-    const speed = (1 / animationSpeed).toFixed(1);
-    const intensity = animationIntensity / 5;
+function apply3DDepthToFrame(ctx, canvas, frameNum, totalFrames, settings) {
+    const progress = frameNum / totalFrames;
+    const cycle = progress * 4 % 4;
+    let depthZ = 0;
+    let rotateY = 0;
     
-    switch (animation) {
-        case 'rotate':
-            return `rotate ${speed}s linear infinite`;
-        case 'bounce':
-            return `bounce ${speed}s ease-in-out infinite`;
-        case 'fade':
-            return `fade ${speed}s ease-in-out infinite`;
-        case 'shake':
-            return `shake ${speed}s ease-in-out infinite`;
-        case 'pulse':
-            return `pulse ${speed}s ease-in-out infinite`;
-        case 'flip':
-            return `flip ${speed}s ease-in-out infinite`;
-        case 'swing':
-            return `swing ${speed}s ease-in-out infinite`;
-        case 'zoom':
-            return `zoom ${speed}s ease-in-out infinite`;
-        case 'spin':
-            return `spin ${speed}s ease-in-out infinite`;
-        case 'wiggle':
-            return `wiggle ${speed}s ease-in-out infinite`;
-        case 'squeeze':
-            return `squeeze ${speed}s ease-in-out infinite`;
-        case 'slide':
-            return `slide ${speed}s ease-in-out infinite`;
-        case 'glitch':
-            return `glitch ${speed}s ease-in-out infinite`;
-        case 'bounce-around':
-            return `bounceAround ${speed}s ease-in-out infinite`;
-        case 'float':
-            return `float ${speed}s ease-in-out infinite`;
-        case 'spiral':
-            return `spiral ${speed}s linear infinite`;
-        case 'throb':
-            return `throb ${speed}s ease-in-out infinite`;
-        case 'heartbeat':
-            return `heartbeat ${speed}s ease-in-out infinite`;
-        case 'jello':
-            return `jello ${speed}s ease-in-out infinite`;
-        case 'pendulum':
-            return `pendulum ${speed}s ease-in-out infinite`;
-        case 'blink':
-            return `blink ${speed}s step-end infinite`;
-        case 'rainbow':
-            return `rainbow ${speed}s linear infinite`;
-        case 'tornado':
-            return `tornado ${speed}s ease-in-out infinite`;
-        case 'orbit':
-            return `orbit ${speed}s linear infinite`;
-        case 'diagonal-bounce':
-            return `diagonalBounce ${speed}s ease-in-out infinite`;
-        case 'pixelate':
-            return `pixelate ${speed}s ease-in-out infinite`;
-        case 'sway':
-            return `sway ${speed}s ease-in-out infinite`;
-        case 'ripple':
-            return `ripple ${speed}s ease-in-out infinite`;
-        case 'split-shift':
-            return `splitShift ${speed}s ease-in-out infinite`;
-        case 'confetti':
-            return `confetti ${speed}s linear infinite`;
-        case 'wave':
-            return `wave ${speed}s ease-in-out infinite`;
-        case 'jump-rope':
-            return `jumpRope ${speed}s ease-in-out infinite`;
-        case 'typewriter':
-            return `typewriter ${speed}s steps(8, end) infinite`;
-        case 'bounce-flip':
-            return `bounceFlip ${speed}s ease-in-out infinite`;
-        case 'dizzy':
-            return `dizzy ${speed}s ease-in-out infinite`;
-        case 'dance':
-            return `dance ${speed}s ease-in-out infinite`;
-        case 'elastic':
-            return `elastic ${speed}s cubic-bezier(.68,-0.55,.27,1.55) infinite`;
-        case 'shadow-play':
-            return `shadowPlay ${speed}s ease-in-out infinite`;
-        case 'bounce-rotate':
-            return `bounceRotate ${speed}s ease-in-out infinite`;
-        case 'party-mode':
-            return `partyMode ${speed}s ease-in-out infinite`;
-        case 'rolling':
-            return `rolling ${speed}s ease-in-out infinite`;
-        case 'kaleidoscope':
-            return `kaleidoscope ${speed}s linear infinite`;
-        case 'wobble':
-            return `wobble ${speed}s ease-in-out infinite`;
-        case 'teleport':
-            return `teleport ${speed}s ease-in-out infinite`;
-        case 'pinwheel':
-            return `pinwheel ${speed}s linear infinite`;
-        case 'perspective-rotate':
-            return `perspectiveRotate ${speed}s ease-in-out infinite`;
-        case 'flip-3d':
-            return `flip3d ${speed}s ease-in-out infinite`;
-        case 'cube-rotate':
-            return `cubeRotate ${speed}s linear infinite`;
-        default:
-            return 'none';
+    if (cycle < 1) {
+        depthZ = cycle * 20;
+        rotateY = cycle * 10;
+    } else if (cycle < 2) {
+        depthZ = 20 - (cycle - 1) * 20;
+        rotateY = 10 - (cycle - 1) * 20;
+    } else if (cycle < 3) {
+        depthZ = (cycle - 2) * 20;
+        rotateY = -10 * (cycle - 2);
+    } else {
+        depthZ = 20 - (cycle - 3) * 20;
+        rotateY = -10 + (cycle - 3) * 10;
     }
+    
+    // Apply depth effect
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    // Scale based on depth (further = smaller)
+    const depthScale = 1 - (depthZ / 150);
+    
+    // Apply perspective transformation
+    ctx.translate(centerX, centerY);
+    ctx.transform(
+        depthScale, 0, rotateY * 0.01,
+        depthScale, 0, 0
+    );
+    ctx.translate(-centerX, -centerY);
+    
+    // Add shadow for depth perception
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = depthZ / 2;
+    ctx.shadowOffsetX = rotateY / 2;
+    ctx.shadowOffsetY = depthZ / 3;
 }
 
 document.getElementById('generateGif').onclick = async function() {
@@ -904,21 +861,13 @@ document.getElementById('generateGif').onclick = async function() {
             const effectiveHeight = scaledHeight;
             
             tempCtx.save();
-
-            tempCtx.globalAlpha = settings.opacity / 100;
-
-            // Draw the image without applying transformations yet
-            tempCtx.drawImage(
-                frame,
-                x, y,
-                effectiveWidth,
-                effectiveHeight
-            );
-
-            // Restore the original context state
-            tempCtx.restore();
             
-            // Apply animation to the canvas through context transformations (more complex approach)
+            // Apply 3D depth effect if enabled
+            if (depthEffect) {
+                apply3DDepthToFrame(tempCtx, tempCanvas, frameNum, totalFrames, settings);
+            }
+            
+            // Apply animation transforms to the context
             if (selectedAnimation !== 'none') {
                 const centerX = x + (effectiveWidth / 2);
                 const centerY = y + (effectiveHeight / 2);
@@ -1318,23 +1267,6 @@ document.getElementById('generateGif').onclick = async function() {
                     case 'pinwheel':
                         tempCtx.rotate(progress * Math.PI * 2);
                         // Note: clip-path would be handled in CSS, can't apply to canvas context directly
-                        break;
-                    case 'perspective-rotate':
-                        const prRotation = Math.sin(progress * Math.PI * 2) * 180;
-                        tempCtx.transform(1, 0, Math.sin(prRotation * Math.PI/180) * 0.5, 1, 0, 0);
-                        break;
-                    case 'flip-3d':
-                        const f3dProgress = progress * 2 % 1;
-                        const f3dScale = Math.abs(Math.cos(f3dProgress * Math.PI));
-                        tempCtx.scale(f3dScale, 1);
-                        tempCtx.rotate(f3dProgress * Math.PI * 2);
-                        break;
-                    case 'cube-rotate':
-                        const crProgress = progress * 4 % 4;
-                        const crAngle = crProgress * 90 * (Math.PI/180);
-                        const crScale = Math.abs(Math.cos(crAngle));
-                        tempCtx.scale(crScale, crScale);
-                        tempCtx.rotate(crAngle);
                         break;
                 }
                 
