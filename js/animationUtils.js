@@ -11,7 +11,8 @@ function updateLivePreview() {
     
     // Reset any previous animations
     previewCanvas.style.animation = 'none';
-    previewCanvas.style.transform = 'none';
+    // Force reflow to ensure animation is reset
+    void previewCanvas.offsetWidth;
     
     ctx.fillStyle = settings.backgroundColor;
     ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -42,7 +43,7 @@ function updateLivePreview() {
     // Restore the original context state
     ctx.restore();
     
-    // Apply animation to the canvas through CSS (simpler approach)
+    // Apply animation to the canvas through CSS
     if (window.selectedAnimation !== 'none') {
         const animationCSS = generateAnimationCSS(window.selectedAnimation);
         previewCanvas.style.animation = animationCSS;
