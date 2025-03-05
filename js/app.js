@@ -20,7 +20,7 @@ let brushColor = '#ffffff';
 let undoStack = []; 
 let redoStack = [];
 
-function initializeApp() {
+async function initializeApp() {
     // Initialize the canvas
     const canvas = document.getElementById('preview');
     if (canvas) {
@@ -38,9 +38,11 @@ function initializeApp() {
     document.getElementById('backgroundColorValue').textContent = 'transparent';
     
     // Fetch the GIF worker script
-    fetchGifWorker().then(blob => {
-        gifWorkerBlob = blob;
-    });
+    try {
+        window.gifWorkerBlob = await fetchGifWorker();
+    } catch (error) {
+        console.error('Failed to preload GIF worker:', error);
+    }
     
     // Initialize accordion UI
     setupAccordion();

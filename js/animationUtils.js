@@ -11,8 +11,8 @@ function updateLivePreview() {
     
     // Reset any previous animations
     previewCanvas.style.animation = 'none';
-    // Force reflow to ensure animation is reset
-    void previewCanvas.offsetWidth;
+    previewCanvas.offsetHeight; // Trigger reflow to reset animation
+    previewCanvas.style.transform = 'none';
     
     ctx.fillStyle = settings.backgroundColor;
     ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
@@ -86,14 +86,3 @@ function generateAnimationCSS(animation) {
             return 'none';
     }
 }
-
-function getImageSettings() {
-    const bgColorValue = document.getElementById('backgroundColorValue').textContent;
-    return {
-        backgroundColor: bgColorValue,
-        opacity: parseInt(document.getElementById('opacity').value),
-        scale: parseInt(document.getElementById('scale').value)
-    };
-}
-
-export { updateLivePreview, generateAnimationCSS, getImageSettings };

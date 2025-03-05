@@ -1,21 +1,22 @@
-import { getImageSettings } from './animationUtils.js';
-
-async function fetchGifWorker() {
-    try {
-        const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
-        return await response.blob();
-    } catch (error) {
-        console.error('Error fetching GIF worker:', error);
-        return null;
-    }
-}
-
 async function generateGif() {
     const settings = getImageSettings();
     
     if (window.frames.length === 0) {
         alert('Please upload some images first!');
         return;
+    }
+
+    // Check if worker blob is available
+    if (!window.gifWorkerBlob) {
+        try {
+            window.gifWorkerBlob = await fetchGifWorker();
+            if (!window.gifWorkerBlob) {
+                throw new Error('Failed to load GIF worker');
+            }
+        } catch (error) {
+            alert('Error loading GIF worker: ' + error.message);
+            return;
+        }
     }
 
     const fps = parseInt(document.getElementById('fps').value);
@@ -40,110 +41,111 @@ async function generateGif() {
     for (let frameNum = 0; frameNum < totalFrames; frameNum++) {
         const progress = frameNum / totalFrames;
         
-        window.frames.forEach((frame) => {
-            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        // Use only the first frame for now (can be expanded to multiple frames)
+        const frame = window.frames[0];
+        
+        tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        tempCtx.fillStyle = settings.backgroundColor;
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        const scale = settings.scale / 100;
+        const scaledWidth = tempCanvas.width * scale;
+        const scaledHeight = tempCanvas.height * scale;
+        const x = (tempCanvas.width - scaledWidth) / 2;
+        const y = (tempCanvas.height - scaledHeight) / 2;
+        
+        const effectiveWidth = scaledWidth;
+        const effectiveHeight = scaledHeight;
+        
+        tempCtx.save();
+        
+        // Apply animation transforms to the context
+        if (window.selectedAnimation !== 'none') {
+            const centerX = x + (effectiveWidth / 2);
+            const centerY = y + (effectiveHeight / 2);
             
-            tempCtx.fillStyle = settings.backgroundColor;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.translate(centerX, centerY);
             
-            const scale = settings.scale / 100;
-            const scaledWidth = tempCanvas.width * scale;
-            const scaledHeight = tempCanvas.height * scale;
-            const x = (tempCanvas.width - scaledWidth) / 2;
-            const y = (tempCanvas.height - scaledHeight) / 2;
+            const intensityFactor = window.animationIntensity / 5;
             
-            const effectiveWidth = scaledWidth;
-            const effectiveHeight = scaledHeight;
-            
-            tempCtx.save();
-            
-            // Apply animation transforms to the context
-            if (window.selectedAnimation !== 'none') {
-                const centerX = tempCanvas.width / 2;
-                const centerY = tempCanvas.height / 2;
-                
-                tempCtx.translate(centerX, centerY);
-                
-                const intensityFactor = window.animationIntensity / 5;
-                
-                switch(window.selectedAnimation) {
-                    case 'rotate':
-                        tempCtx.rotate(progress * Math.PI * 2);
-                        break;
-                    case 'bounce':
-                        const bounceOffset = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
-                        tempCtx.translate(0, bounceOffset);
-                        break;
-                    case 'fade':
-                        tempCtx.globalAlpha = (settings.opacity / 100) * (0.3 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.7);
-                        break;
-                    case 'shake':
-                        const shakeOffset = Math.sin(progress * Math.PI * 4) * 5 * intensityFactor;
-                        tempCtx.translate(shakeOffset, 0);
-                        break;
-                    case 'pulse':
-                        const pulseScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
-                        tempCtx.scale(pulseScale, pulseScale);
-                        break;
-                    case 'flip':
-                        const flipProgress = Math.sin(progress * Math.PI * 2);
-                        tempCtx.scale(flipProgress < 0 ? -1 : 1, 1);
-                        break;
-                    case 'swing':
-                        const swingAngle = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
-                        tempCtx.rotate(swingAngle);
-                        break;
-                    case 'zoom':
-                        const zoomScale = 1 - Math.abs(Math.sin(progress * Math.PI * 2)) * 0.3 * intensityFactor;
-                        tempCtx.scale(zoomScale, zoomScale);
-                        break;
-                    case 'spin':
-                        const spinRotation = progress * Math.PI * 2;
-                        const spinScale = 1 - Math.abs(Math.sin(progress * Math.PI)) * 0.2 * intensityFactor;
-                        tempCtx.rotate(spinRotation);
-                        tempCtx.scale(spinScale, spinScale);
-                        break;
-                    case 'wiggle':
-                        const wiggleAngle = Math.sin(progress * Math.PI * 4) * 10 * intensityFactor * (Math.PI / 180);
-                        tempCtx.transform(1, 0, Math.tan(wiggleAngle), 1, 0, 0);
-                        break;
-                    case 'squeeze':
-                        const squeezeX = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
-                        const squeezeY = 1 - Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
-                        tempCtx.scale(squeezeX, squeezeY);
-                        break;
-                    case 'slide':
-                        const slideOffset = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
-                        tempCtx.translate(slideOffset, 0);
-                        break;
-                    case 'glitch':
-                        if (progress * 10 % 1 < 0.3) {
-                            const glitchX = (Math.random() - 0.5) * 8 * intensityFactor;
-                            const glitchY = (Math.random() - 0.5) * 8 * intensityFactor;
-                            tempCtx.translate(glitchX, glitchY);
-                        }
-                        break;
-                }
-                
-                tempCtx.translate(-centerX, -centerY);
+            switch(window.selectedAnimation) {
+                case 'rotate':
+                    tempCtx.rotate(progress * Math.PI * 2);
+                    break;
+                case 'bounce':
+                    const bounceOffset = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                    tempCtx.translate(0, bounceOffset);
+                    break;
+                case 'fade':
+                    tempCtx.globalAlpha = (settings.opacity / 100) * (0.3 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.7);
+                    break;
+                case 'shake':
+                    const shakeOffset = Math.sin(progress * Math.PI * 4) * 5 * intensityFactor;
+                    tempCtx.translate(shakeOffset, 0);
+                    break;
+                case 'pulse':
+                    const pulseScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                    tempCtx.scale(pulseScale, pulseScale);
+                    break;
+                case 'flip':
+                    const flipProgress = Math.sin(progress * Math.PI * 2);
+                    tempCtx.scale(flipProgress < 0 ? -1 : 1, 1);
+                    break;
+                case 'swing':
+                    const swingAngle = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
+                    tempCtx.rotate(swingAngle);
+                    break;
+                case 'zoom':
+                    const zoomScale = 1 - Math.abs(Math.sin(progress * Math.PI * 2)) * 0.3 * intensityFactor;
+                    tempCtx.scale(zoomScale, zoomScale);
+                    break;
+                case 'spin':
+                    const spinRotation = progress * Math.PI * 2;
+                    const spinScale = 1 - Math.abs(Math.sin(progress * Math.PI)) * 0.2 * intensityFactor;
+                    tempCtx.rotate(spinRotation);
+                    tempCtx.scale(spinScale, spinScale);
+                    break;
+                case 'wiggle':
+                    const wiggleAngle = Math.sin(progress * Math.PI * 4) * 10 * intensityFactor * (Math.PI / 180);
+                    tempCtx.transform(1, 0, Math.tan(wiggleAngle), 1, 0, 0);
+                    break;
+                case 'squeeze':
+                    const squeezeX = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                    const squeezeY = 1 - Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                    tempCtx.scale(squeezeX, squeezeY);
+                    break;
+                case 'slide':
+                    const slideOffset = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                    tempCtx.translate(slideOffset, 0);
+                    break;
+                case 'glitch':
+                    if (progress * 10 % 1 < 0.3) {
+                        const glitchX = (Math.random() - 0.5) * 8 * intensityFactor;
+                        const glitchY = (Math.random() - 0.5) * 8 * intensityFactor;
+                        tempCtx.translate(glitchX, glitchY);
+                    }
+                    break;
             }
             
-            tempCtx.globalAlpha = settings.opacity / 100;
-            
-            tempCtx.drawImage(
-                frame,
-                x,
-                y,
-                effectiveWidth,
-                effectiveHeight
-            );
-            
-            tempCtx.restore();
-            
-            gif.addFrame(tempCanvas, {
-                delay: 1000 / (fps * window.animationSpeed),
-                copy: true
-            });
+            tempCtx.translate(-centerX, -centerY);
+        }
+        
+        tempCtx.globalAlpha = settings.opacity / 100;
+        
+        tempCtx.drawImage(
+            frame,
+            x,
+            y,
+            effectiveWidth,
+            effectiveHeight
+        );
+        
+        tempCtx.restore();
+        
+        gif.addFrame(tempCanvas, {
+            delay: 1000 / (fps * window.animationSpeed),
+            copy: true
         });
     }
 
@@ -162,4 +164,3 @@ async function generateGif() {
     gif.render();
 }
 
-export { fetchGifWorker, generateGif };
