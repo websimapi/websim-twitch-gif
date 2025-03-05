@@ -143,11 +143,43 @@ label {
     margin: 10px 0 5px;
 }
 
+.effect-categories {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    background: #2d2d32;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    flex-grow: 1;
+}
+
+.category-tab:hover {
+    background: #3d3d42;
+}
+
+.category-tab.active {
+    border-color: #9147ff;
+    background: #9147ff;
+}
+
 .animation-options {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 10px;
     margin: 15px 0;
+    display: none;
+}
+
+.animation-options.active {
+    display: grid;
 }
 
 .animation-option {
@@ -246,6 +278,15 @@ label {
 .wobble-preview::after { animation: wobble 1.5s ease-in-out infinite; }
 .teleport-preview::after { animation: teleport 2s ease-in-out infinite; }
 .pinwheel-preview::after { animation: pinwheel 1.5s linear infinite; }
+.perspective-rotate-preview::after { 
+    animation: perspectiveRotate 2s ease-in-out infinite; 
+}
+.flip-3d-preview::after { 
+    animation: flip3d 2s ease-in-out infinite; 
+}
+.cube-rotate-preview::after { 
+    animation: cubeRotate 2s linear infinite; 
+}
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -535,6 +576,26 @@ label {
 @keyframes pinwheel {
     from { transform: rotate(0deg) scale(1); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
     to { transform: rotate(360deg) scale(1); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+}
+
+@keyframes perspectiveRotate {
+    0% { transform: perspective(500px) rotateY(0deg); }
+    50% { transform: perspective(500px) rotateY(180deg); }
+    100% { transform: perspective(500px) rotateY(360deg); }
+}
+
+@keyframes flip3d {
+    0% { transform: perspective(500px) rotate3d(1, 1, 0, 0deg); }
+    50% { transform: perspective(500px) rotate3d(1, 1, 0, 180deg); }
+    100% { transform: perspective(500px) rotate3d(1, 1, 0, 360deg); }
+}
+
+@keyframes cubeRotate {
+    0% { transform: perspective(500px) rotateX(0deg) rotateY(0deg); }
+    25% { transform: perspective(500px) rotateX(90deg) rotateY(0deg); }
+    50% { transform: perspective(500px) rotateX(180deg) rotateY(90deg); }
+    75% { transform: perspective(500px) rotateX(270deg) rotateY(180deg); }
+    100% { transform: perspective(500px) rotateX(360deg) rotateY(360deg); }
 }
 
 .ai-generation-container {

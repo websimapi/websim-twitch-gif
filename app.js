@@ -41,6 +41,20 @@ document.querySelectorAll('.animation-option').forEach(option => {
     });
 });
 
+// Effect category tabs
+document.querySelectorAll('.category-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.category-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and its content
+        tab.classList.add('active');
+        const category = tab.dataset.category;
+        document.querySelector(`.category-content[data-category="${category}"]`).classList.add('active');
+    });
+});
+
 // Animation settings
 document.getElementById('animationSpeed').addEventListener('input', function() {
     animationSpeed = parseFloat(this.value);
@@ -831,6 +845,12 @@ function generateAnimationCSS(animation) {
             return `teleport ${speed}s ease-in-out infinite`;
         case 'pinwheel':
             return `pinwheel ${speed}s linear infinite`;
+        case 'perspective-rotate':
+            return `perspectiveRotate ${speed}s ease-in-out infinite`;
+        case 'flip-3d':
+            return `flip3d ${speed}s ease-in-out infinite`;
+        case 'cube-rotate':
+            return `cubeRotate ${speed}s linear infinite`;
         default:
             return 'none';
     }
@@ -884,8 +904,21 @@ document.getElementById('generateGif').onclick = async function() {
             const effectiveHeight = scaledHeight;
             
             tempCtx.save();
+
+            tempCtx.globalAlpha = settings.opacity / 100;
+
+            // Draw the image without applying transformations yet
+            tempCtx.drawImage(
+                frame,
+                x, y,
+                effectiveWidth,
+                effectiveHeight
+            );
+
+            // Restore the original context state
+            tempCtx.restore();
             
-            // Apply animation transforms to the context
+            // Apply animation to the canvas through context transformations (more complex approach)
             if (selectedAnimation !== 'none') {
                 const centerX = x + (effectiveWidth / 2);
                 const centerY = y + (effectiveHeight / 2);
@@ -1285,6 +1318,23 @@ document.getElementById('generateGif').onclick = async function() {
                     case 'pinwheel':
                         tempCtx.rotate(progress * Math.PI * 2);
                         // Note: clip-path would be handled in CSS, can't apply to canvas context directly
+                        break;
+                    case 'perspective-rotate':
+                        const prRotation = Math.sin(progress * Math.PI * 2) * 180;
+                        tempCtx.transform(1, 0, Math.sin(prRotation * Math.PI/180) * 0.5, 1, 0, 0);
+                        break;
+                    case 'flip-3d':
+                        const f3dProgress = progress * 2 % 1;
+                        const f3dScale = Math.abs(Math.cos(f3dProgress * Math.PI));
+                        tempCtx.scale(f3dScale, 1);
+                        tempCtx.rotate(f3dProgress * Math.PI * 2);
+                        break;
+                    case 'cube-rotate':
+                        const crProgress = progress * 4 % 4;
+                        const crAngle = crProgress * 90 * (Math.PI/180);
+                        const crScale = Math.abs(Math.cos(crAngle));
+                        tempCtx.scale(crScale, crScale);
+                        tempCtx.rotate(crAngle);
                         break;
                 }
                 
