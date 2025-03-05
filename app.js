@@ -215,14 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call populateAnimationOptions to populate animation list
     populateAnimationOptions();
     
-    // Select the first animation by default
-    const firstAnimation = document.querySelector('.animation-option');
-    if (firstAnimation) {
-        firstAnimation.classList.add('selected');
-        selectedAnimation = firstAnimation.dataset.animation;
-        updateLivePreview();
-    }
-    
     // Set up filter and search listeners
     document.getElementById('animationSearch').addEventListener('input', populateAnimationOptions);
     document.getElementById('animationCategory').addEventListener('change', populateAnimationOptions);
@@ -327,6 +319,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedAnimation && selectedAnimation !== 'none') {
             livePreview.classList.add(`${selectedAnimation}-preview`);
         }
+    }
+    
+    // Initial preview update
+    updateLivePreview();
+    
+    // Select the default animation
+    const defaultAnimOption = document.querySelector(`.animation-option[data-animation="${selectedAnimation}"]`);
+    if (defaultAnimOption) {
+        defaultAnimOption.classList.add('selected');
     }
     
     // Show values for range inputs
