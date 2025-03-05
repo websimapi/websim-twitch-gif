@@ -105,6 +105,9 @@ const animationCategories = {
 // Initialize user favorites
 let userFavorites = JSON.parse(localStorage.getItem('animationFavorites')) || [];
 
+// Initialize selected animation
+let selectedAnimation = 'bounce';
+
 // Tab functionality
 document.querySelectorAll('.tab-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -128,13 +131,9 @@ function populateAnimationOptions() {
     const currentCategory = document.getElementById('animationCategory').value;
     const showingFavorites = document.getElementById('viewFavorites').classList.contains('active');
     
-    // Get all animation options
-    const animationElements = document.querySelectorAll('.animation-option');
-    
-    document.querySelectorAll('.animation-option').forEach(option => {
-        const animationName = option.dataset.animation;
-        const displayName = option.textContent.trim();
-        const category = animationCategories[animationName] || 'basic';
+    // Loop through all animation categories to create options
+    for (const [animationName, category] of Object.entries(animationCategories)) {
+        const displayName = animationName.replace(/-/g, ' ');
         const isFavorite = userFavorites.includes(animationName);
         
         // Apply filters
@@ -143,16 +142,13 @@ function populateAnimationOptions() {
             (currentCategory !== 'all' && category !== currentCategory) ||
             (searchQuery && !displayName.toLowerCase().includes(searchQuery))
         ) {
-            return; // Skip this animation if it doesn't match filters
+            continue; // Skip this animation if it doesn't match filters
         }
         
         // Create new animation option element
         const newOption = document.createElement('div');
         newOption.className = 'animation-option';
         newOption.dataset.animation = animationName;
-        if (selectedAnimation === animationName) {
-            newOption.classList.add('selected');
-        }
         
         // Create category tag
         const categoryTag = document.createElement('div');
@@ -172,6 +168,7 @@ function populateAnimationOptions() {
         // Create preview
         const preview = document.createElement('div');
         preview.className = `animation-preview ${animationName}-preview`;
+        preview.innerHTML = '<div></div>';
         
         // Create name
         const nameSpan = document.createElement('div');
@@ -195,7 +192,7 @@ function populateAnimationOptions() {
         });
         
         container.appendChild(newOption);
-    });
+    }
 }
 
 // Toggle favorite status for an animation
@@ -214,69 +211,9 @@ function toggleFavorite(animationName) {
     populateAnimationOptions();
 }
 
-// Convert original animation options to new format when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Extract all animations from the original HTML
-    const originalOptions = document.querySelectorAll('.animation-option');
-    const animationsContainer = document.querySelector('.animation-options');
-    animationsContainer.innerHTML = ''; // Clear container
-    
-    originalOptions.forEach(option => {
-        const animationName = option.dataset.animation;
-        const displayName = option.textContent.trim();
-        const category = animationCategories[animationName] || 'basic';
-        const isFavorite = userFavorites.includes(animationName);
-        
-        // Create new animation option element
-        const newOption = document.createElement('div');
-        newOption.className = 'animation-option';
-        newOption.dataset.animation = animationName;
-        if (selectedAnimation === animationName) {
-            newOption.classList.add('selected');
-        }
-        
-        // Create category tag
-        const categoryTag = document.createElement('div');
-        categoryTag.className = 'category-tag';
-        categoryTag.textContent = category;
-        
-        // Create favorite button
-        const favoriteBtn = document.createElement('button');
-        favoriteBtn.className = `favorite-btn${isFavorite ? ' active' : ''}`;
-        favoriteBtn.innerHTML = '<i class="icon-star"></i>';
-        favoriteBtn.title = isFavorite ? 'Remove from favorites' : 'Add to favorites';
-        favoriteBtn.onclick = (e) => {
-            e.stopPropagation(); // Prevent selecting the animation
-            toggleFavorite(animationName);
-        };
-        
-        // Create preview
-        const preview = document.createElement('div');
-        preview.className = `animation-preview ${animationName}-preview`;
-        
-        // Create name
-        const nameSpan = document.createElement('div');
-        nameSpan.className = 'animation-name';
-        nameSpan.textContent = displayName;
-        
-        // Assemble option
-        newOption.appendChild(categoryTag);
-        newOption.appendChild(favoriteBtn);
-        newOption.appendChild(preview);
-        newOption.appendChild(nameSpan);
-        
-        // Add event listener
-        newOption.addEventListener('click', () => {
-            document.querySelectorAll('.animation-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            newOption.classList.add('selected');
-            selectedAnimation = animationName;
-            updateLivePreview();
-        });
-        
-        animationsContainer.appendChild(newOption);
-    });
+    // Call populateAnimationOptions to populate animation list
+    populateAnimationOptions();
     
     // Set up filter and search listeners
     document.getElementById('animationSearch').addEventListener('input', populateAnimationOptions);
@@ -373,5 +310,3 @@ document.addEventListener('DOMContentLoaded', () => {
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     document.head.appendChild(fontLink);
 });
-
-// ... rest of existing code ...

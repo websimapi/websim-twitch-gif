@@ -281,6 +281,15 @@ h1 {
     position: relative;
 }
 
+.animation-preview::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background-color: #9147ff;
+    border-radius: 5px;
+}
+
 .animation-option .category-tag {
     position: absolute;
     top: 5px;
