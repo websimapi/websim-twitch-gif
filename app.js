@@ -19,7 +19,6 @@ let brushSize = 5;
 let brushColor = '#ffffff';
 let undoStack = [];
 let redoStack = [];
-let selectionTolerance = 30; // Add selection tolerance setting
 
 // Special effects selection
 document.querySelectorAll('.effect-option').forEach(option => {
@@ -145,7 +144,7 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             currentTool = option.dataset.tool;
             
             // Hide selection controls if not in selection mode
-            if (currentTool !== 'magic-select') {
+            if (currentTool !== 'select' && currentTool !== 'magic-wand') {
                 document.getElementById('selectionControls').classList.remove('active');
                 selectedArea = null;
                 // Clear overlay
@@ -153,7 +152,7 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             }
         });
     });
-
+    
     // Color selection
     document.querySelectorAll('.color-option').forEach(option => {
         option.addEventListener('click', () => {
@@ -191,7 +190,12 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
                 lastY = y;
                 break;
                 
-            case 'magic-select':
+            case 'select':
+                isSelecting = true;
+                selectionStart = { x, y };
+                break;
+                
+            case 'magic-wand':
                 magicWandSelect(editorCanvas, overlayCanvas, x, y);
                 break;
                 
@@ -221,13 +225,43 @@ function setupEditorTools(editorCanvas, overlayCanvas) {
             
             lastX = x;
             lastY = y;
+        } else if (isSelecting) {
+            // Draw selection rectangle
+            overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            selectionEnd = { x, y };
+            
+            overlayCtx.strokeStyle = '#9147ff';
+            overlayCtx.lineWidth = 2;
+            overlayCtx.setLineDash([5, 5]);
+            
+            const width = selectionEnd.x - selectionStart.x;
+            const height = selectionEnd.y - selectionStart.y;
+            
+            overlayCtx.strokeRect(selectionStart.x, selectionStart.y, width, height);
         }
     });
     
-    // Add tolerance slider
-    document.getElementById('selectionTolerance').addEventListener('input', function() {
-        selectionTolerance = parseInt(this.value);
-        document.getElementById('toleranceValue').textContent = selectionTolerance;
+    overlayCanvas.addEventListener('mouseup', function() {
+        if (isDrawing) {
+            isDrawing = false;
+            saveToUndoStack(editorCanvas);
+        } else if (isSelecting) {
+            isSelecting = false;
+            
+            // Create selection area
+            const left = Math.min(selectionStart.x, selectionEnd.x);
+            const top = Math.min(selectionStart.y, selectionEnd.y);
+            const width = Math.abs(selectionEnd.x - selectionStart.x);
+            const height = Math.abs(selectionEnd.y - selectionStart.y);
+            
+            // Only create selection if it has size
+            if (width > 5 && height > 5) {
+                selectedArea = { left, top, width, height };
+                document.getElementById('selectionControls').classList.add('active');
+            } else {
+                overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            }
+        }
     });
     
     // Selection controls
@@ -353,68 +387,29 @@ function cropSelection(canvas, area) {
 
 function fillSelection(canvas, area, color) {
     const ctx = canvas.getContext('2d');
-    
-    // If we have a mask, use it for precise filling
-    if (area.mask) {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const width = canvas.width;
-        
-        // Convert fill color hex to rgba
-        const r = parseInt(color.slice(1, 3), 16);
-        const g = parseInt(color.slice(3, 5), 16);
-        const b = parseInt(color.slice(5, 7), 16);
-        
-        for (let y = area.top; y < area.top + area.height; y++) {
-            for (let x = area.left; x < area.left + area.width; x++) {
-                const index = (y * width + x) * 4;
-                // Only fill pixels that are part of the selection mask
-                if (area.mask[y * width + x] === 1) {
-                    data[index] = r;
-                    data[index + 1] = g;
-                    data[index + 2] = b;
-                    // Preserve original alpha
-                }
-            }
-        }
-        
-        ctx.putImageData(imageData, 0, 0);
-    } else {
-        // Fallback to simple rectangle filling
-        ctx.fillStyle = color;
-        ctx.fillRect(area.left, area.top, area.width, area.height);
-    }
+    ctx.fillStyle = color;
+    ctx.fillRect(area.left, area.top, area.width, area.height);
 }
 
 function deleteSelection(canvas, area) {
     const ctx = canvas.getContext('2d');
-    
-    // If we have a mask, use it for precise deletion
-    if (area.mask) {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const width = canvas.width;
-        
-        for (let y = area.top; y < area.top + area.height; y++) {
-            for (let x = area.left; x < area.left + area.width; x++) {
-                const index = (y * width + x) * 4;
-                // Only set transparent pixels that are part of the selection mask
-                if (area.mask[y * width + x] === 1) {
-                    data[index + 3] = 0; // Set alpha to 0 (transparent)
-                }
-            }
-        }
-        
-        ctx.putImageData(imageData, 0, 0);
-    } else {
-        // Fallback to simple rectangle clearing
-        ctx.clearRect(area.left, area.top, area.width, area.height);
-    }
+    ctx.clearRect(area.left, area.top, area.width, area.height);
 }
 
 function makeSelectionTransparent(canvas, area) {
-    // Reuse deleteSelection as it already sets transparency
-    deleteSelection(canvas, area);
+    const ctx = canvas.getContext('2d');
+    
+    // Get image data from selection
+    const imageData = ctx.getImageData(area.left, area.top, area.width, area.height);
+    const data = imageData.data;
+    
+    // Make all pixels transparent (set alpha to 0)
+    for (let i = 0; i < data.length; i += 4) {
+        data[i + 3] = 0; // Alpha channel
+    }
+    
+    // Put the modified image data back
+    ctx.putImageData(imageData, area.left, area.top);
 }
 
 function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
@@ -424,16 +419,9 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     // Get image data
     const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
     const data = imageData.data;
-    const width = sourceCanvas.width;
-    const height = sourceCanvas.height;
-    
-    // Make sure the click is within canvas bounds
-    if (x < 0 || y < 0 || x >= width || y >= height) {
-        return;
-    }
     
     // Get the color at the selected point
-    const targetIndex = (y * width + x) * 4;
+    const targetIndex = (y * sourceCanvas.width + x) * 4;
     const targetColor = {
         r: data[targetIndex],
         g: data[targetIndex + 1],
@@ -441,151 +429,100 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
         a: data[targetIndex + 3]
     };
     
+    // Tolerance for color matching
+    const tolerance = 30;
+    
     // Create a selection mask
-    const mask = new Uint8Array(width * height);
+    const mask = new Uint8Array(sourceCanvas.width * sourceCanvas.height);
     
-    // Use a smaller sample size for larger images to prevent stack overflow
-    const sampleStep = Math.max(1, Math.floor(Math.sqrt(width * height) / 100));
+    // Flood fill algorithm
+    const stack = [{x, y}];
     
-    // Queue for flood fill (more efficient than recursion)
-    const queue = [];
-    queue.push({x, y});
-    
-    // Mark initial pixel as processed
-    mask[y * width + x] = 1;
-    
-    // Set a safety limit for queue size to prevent memory issues
-    const maxQueueSize = Math.min(width * height, 100000);
-    let processedPixels = 0;
-    
-    // Process queue
-    while (queue.length > 0 && processedPixels < maxQueueSize) {
-        // Get next pixel from queue
-        const pixel = queue.shift();
-        const px = pixel.x;
-        const py = pixel.y;
-        processedPixels++;
+    while (stack.length > 0) {
+        const {x, y} = stack.pop();
         
-        // Check 4-connected neighbors with step size for efficiency
-        for (let dy = -sampleStep; dy <= sampleStep; dy += sampleStep) {
-            for (let dx = -sampleStep; dx <= sampleStep; dx += sampleStep) {
-                if (dx === 0 && dy === 0) continue; // Skip center pixel
-                
-                const nx = px + dx;
-                const ny = py + dy;
-                
-                // Skip if outside canvas
-                if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
-                    continue;
-                }
-                
-                // Skip if already processed
-                const index = ny * width + nx;
-                if (mask[index] === 1) {
-                    continue;
-                }
-                
-                // Get neighbor color
-                const pixelIndex = index * 4;
-                const pixelColor = {
-                    r: data[pixelIndex],
-                    g: data[pixelIndex + 1],
-                    b: data[pixelIndex + 2],
-                    a: data[pixelIndex + 3]
-                };
-                
-                // Calculate color difference using Euclidean distance
-                const colorDifference = Math.sqrt(
-                    Math.pow(pixelColor.r - targetColor.r, 2) +
-                    Math.pow(pixelColor.g - targetColor.g, 2) +
-                    Math.pow(pixelColor.b - targetColor.b, 2) +
-                    Math.pow(pixelColor.a - targetColor.a, 2)
-                );
-                
-                // Add to selection if similar enough
-                if (colorDifference <= selectionTolerance) {
-                    mask[index] = 1;
-                    queue.push({x: nx, y: ny});
-                    
-                    // Break early if queue gets too big
-                    if (queue.length > maxQueueSize) {
-                        break;
-                    }
-                }
-            }
-            if (queue.length > maxQueueSize) {
-                break;
-            }
+        if (x < 0 || y < 0 || x >= sourceCanvas.width || y >= sourceCanvas.height)
+            continue;
+        
+        const index = y * sourceCanvas.width + x;
+        
+        if (mask[index] === 1)
+            continue;
+        
+        const pixelIndex = index * 4;
+        const pixelColor = {
+            r: data[pixelIndex],
+            g: data[pixelIndex + 1],
+            b: data[pixelIndex + 2],
+            a: data[pixelIndex + 3]
+        };
+        
+        // Check if colors are similar
+        if (
+            Math.abs(pixelColor.r - targetColor.r) <= tolerance &&
+            Math.abs(pixelColor.g - targetColor.g) <= tolerance &&
+            Math.abs(pixelColor.b - targetColor.b) <= tolerance &&
+            Math.abs(pixelColor.a - targetColor.a) <= tolerance
+        ) {
+            mask[index] = 1;
+            
+            stack.push({x: x + 1, y});
+            stack.push({x: x - 1, y});
+            stack.push({x, y: y + 1});
+            stack.push({x, y: y - 1});
         }
     }
     
-    // Clear the overlay
+    // Clear overlay and draw selection
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     
-    // Find selection bounds
-    let minX = width, minY = height, maxX = 0, maxY = 0;
-    let foundPixels = false;
+    // Create a selection path
+    const selection = createSelectionPath(mask, sourceCanvas.width, sourceCanvas.height);
     
-    // Scan in steps for efficiency
-    for (let y = 0; y < height; y += sampleStep) {
-        for (let x = 0; x < width; x += sampleStep) {
-            if (mask[y * width + x] === 1) {
+    // Draw selection outline
+    overlayCtx.strokeStyle = '#9147ff';
+    overlayCtx.lineWidth = 2;
+    overlayCtx.setLineDash([5, 5]);
+    
+    if (selection) {
+        overlayCtx.stroke(selection.path);
+        selectedArea = selection.bounds;
+        document.getElementById('selectionControls').classList.add('active');
+    }
+}
+
+function createSelectionPath(mask, width, height) {
+    // Find bounds of selection
+    let minX = width, minY = height, maxX = 0, maxY = 0;
+    let hasSelection = false;
+    
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const index = y * width + x;
+            if (mask[index] === 1) {
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
                 maxX = Math.max(maxX, x);
                 maxY = Math.max(maxY, y);
-                foundPixels = true;
+                hasSelection = true;
             }
         }
     }
     
-    // Fix bounds that may have been missed due to stepping
-    minX = Math.max(0, minX - sampleStep);
-    minY = Math.max(0, minY - sampleStep);
-    maxX = Math.min(width - 1, maxX + sampleStep);
-    maxY = Math.min(height - 1, maxY + sampleStep);
+    if (!hasSelection) return null;
     
-    // Draw the selection as a semi-transparent overlay
-    if (foundPixels) {
-        // Create a temporary canvas for the selection to avoid performance issues
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = overlayCanvas.width;
-        tempCanvas.height = overlayCanvas.height;
-        const tempCtx = tempCanvas.getContext('2d');
-        
-        // Fill selected pixels with a semi-transparent color
-        tempCtx.fillStyle = 'rgba(100, 100, 255, 0.3)';
-        
-        for (let y = minY; y <= maxY; y++) {
-            for (let x = minX; x <= maxX; x++) {
-                if (mask[y * width + x] === 1) {
-                    tempCtx.fillRect(x, y, 1, 1);
-                }
-            }
-        }
-        
-        // Draw the temporary canvas onto the overlay
-        overlayCtx.drawImage(tempCanvas, 0, 0);
-        
-        // Draw a simple rectangular outline instead of complex path
-        overlayCtx.strokeStyle = '#9147ff';
-        overlayCtx.lineWidth = 2;
-        overlayCtx.setLineDash([5, 5]);
-        overlayCtx.strokeRect(minX - 2, minY - 2, maxX - minX + 4, maxY - minY + 4);
-        
-        // Set the selected area if we found a valid selection
-        selectedArea = {
-            left: minX,
-            top: minY,
-            width: maxX - minX + 1,
-            height: maxY - minY + 1,
-            mask: mask
-        };
-        document.getElementById('selectionControls').classList.add('active');
-    } else {
-        selectedArea = null;
-        document.getElementById('selectionControls').classList.remove('active');
-    }
+    // Create a simplified path around the selection
+    const path = new Path2D();
+    const bounds = {
+        left: minX,
+        top: minY,
+        width: maxX - minX + 1,
+        height: maxY - minY + 1
+    };
+    
+    path.rect(minX, minY, bounds.width, bounds.height);
+    
+    return { path, bounds };
 }
 
 function fillArea(canvas, x, y, fillColor) {
@@ -845,6 +782,8 @@ function generateAnimationCSS(animationType) {
             return `pinwheel ${duration}s linear infinite`;
         case 'rainbow-effect':
             return `rainbow ${duration}s linear infinite`;
+        case 'bounce-orbit':
+            return `bounceOrbit ${duration}s ease-in-out infinite`;
         default:
             return '';
     }
@@ -965,13 +904,11 @@ document.getElementById('generateGif').onclick = async function() {
             const scaledHeight = tempCanvas.height * scale;
             const x = (tempCanvas.width - scaledWidth) / 2;
             const y = (tempCanvas.height - scaledHeight) / 2;
-
+            
             const effectiveWidth = scaledWidth;
             const effectiveHeight = scaledHeight;
-
+            
             tempCtx.save();
-
-            tempCtx.globalAlpha = settings.opacity / 100;
             
             // Apply animation transforms to the context
             if (selectedAnimation !== 'none') {
@@ -1373,6 +1310,27 @@ document.getElementById('generateGif').onclick = async function() {
                     case 'pinwheel':
                         tempCtx.rotate(progress * Math.PI * 2);
                         // Note: clip-path would be handled in CSS, can't apply to canvas context directly
+                        break;
+                    case 'bounce-orbit':
+                        let orbitX = 0, orbitY = 0;
+                        if (progress < 0.25) {
+                            // Top left to top
+                            orbitX = -15 * intensityFactor + (progress * 4) * 15 * intensityFactor;
+                            orbitY = -15 * intensityFactor - Math.sin(progress * 4 * Math.PI/2) * 5 * intensityFactor;
+                        } else if (progress < 0.5) {
+                            // Top to top right
+                            orbitX = (progress - 0.25) * 4 * 15 * intensityFactor;
+                            orbitY = -20 * intensityFactor + Math.sin((progress - 0.25) * 4 * Math.PI/2) * 5 * intensityFactor;
+                        } else if (progress < 0.75) {
+                            // Top right to bottom
+                            orbitX = 15 * intensityFactor - ((progress - 0.5) * 4) * 15 * intensityFactor;
+                            orbitY = -15 * intensityFactor + (progress - 0.5) * 4 * 30 * intensityFactor;
+                        } else {
+                            // Bottom to top left
+                            orbitX = -15 * intensityFactor * (progress - 0.75) * 4;
+                            orbitY = 15 * intensityFactor - (progress - 0.75) * 4 * 30 * intensityFactor;
+                        }
+                        tempCtx.translate(orbitX, orbitY);
                         break;
                 }
                 

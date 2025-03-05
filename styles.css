@@ -246,6 +246,7 @@ label {
 .wobble-preview::after { animation: wobble 1.5s ease-in-out infinite; }
 .teleport-preview::after { animation: teleport 2s ease-in-out infinite; }
 .pinwheel-preview::after { animation: pinwheel 1.5s linear infinite; }
+.bounce-orbit-preview::after { animation: bounceOrbit 2s ease-in-out infinite; }
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -537,6 +538,14 @@ label {
     to { transform: rotate(360deg) scale(1); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 }
 
+@keyframes bounceOrbit {
+    0% { transform: translate(-15px, -15px); }
+    25% { transform: translate(0, -20px); }
+    50% { transform: translate(15px, -15px); }
+    75% { transform: translate(0, 15px); }
+    100% { transform: translate(-15px, -15px); }
+}
+
 .special-effects {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -715,19 +724,4 @@ textarea#imagePrompt {
 .selection-controls.active {
     display: flex;
     gap: 10px;
-}
-
-.selection-settings {
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.selection-settings label {
-    min-width: 120px;
-}
-
-.selection-settings input {
-    flex-grow: 1;
 }
