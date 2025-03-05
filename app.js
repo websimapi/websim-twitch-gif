@@ -643,25 +643,23 @@ document.getElementById('duration').addEventListener('input', function() {
     document.getElementById('durationValue').textContent = `${this.value}s`;
 });
 
-document.getElementById('backgroundColor').addEventListener('input', function() {
-    document.getElementById('backgroundColorValue').textContent = this.value;
-    updateLivePreview();
-});
-
-document.getElementById('backgroundAlpha').addEventListener('input', function() {
-    const value = this.value;
-    document.getElementById('backgroundAlphaValue').textContent = `${value}%`;
-    updateLivePreview();
-});
-
 function getImageSettings() {
     return {
-        backgroundColor: document.getElementById('backgroundColor').value,
-        backgroundAlpha: parseInt(document.getElementById('backgroundAlpha').value) / 100,
+        backgroundColor: document.getElementById('enableBackground').checked ? document.getElementById('backgroundColor').value : null,
         opacity: parseInt(document.getElementById('opacity').value),
         scale: parseInt(document.getElementById('scale').value)
     };
 }
+
+document.getElementById('enableBackground').addEventListener('change', function() {
+    document.getElementById('backgroundColor').disabled = !this.checked;
+    updateLivePreview();
+});
+
+document.getElementById('backgroundColor').addEventListener('input', function() {
+    document.getElementById('backgroundColorValue').textContent = this.value;
+    updateLivePreview();
+});
 
 document.querySelectorAll('.image-settings input, .image-settings select').forEach(input => {
     input.addEventListener('input', updateLivePreview);
@@ -680,12 +678,11 @@ function updateLivePreview() {
     previewCanvas.style.animation = 'none';
     previewCanvas.style.transform = 'none';
     
-    // Apply background with alpha
-    ctx.fillStyle = settings.backgroundColor;
-    ctx.globalAlpha = settings.backgroundAlpha;
-    ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
-    ctx.globalAlpha = 1.0; // Reset alpha for the image
-
+    if (settings.backgroundColor) {
+        ctx.fillStyle = settings.backgroundColor;
+        ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+    }
+    
     const scale = settings.scale / 100;
     const scaledWidth = previewCanvas.width * scale;
     const scaledHeight = previewCanvas.height * scale;
@@ -703,8 +700,7 @@ function updateLivePreview() {
     // Draw the image without applying transformations yet
     ctx.drawImage(
         currentFrame,
-        x,
-        y,
+        x, y,
         effectiveWidth,
         effectiveHeight
     );
@@ -788,14 +784,10 @@ document.getElementById('generateGif').onclick = async function() {
         frames.forEach((frame) => {
             tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            // Apply background with alpha
-            tempCtx.fillStyle = settings.backgroundColor;
-            tempCtx.globalAlpha = settings.backgroundAlpha;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            tempCtx.globalAlpha = 1.0; // Reset alpha for other operations
-            
-            tempCtx.fillStyle = settings.backgroundColor;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            if (settings.backgroundColor) {
+                tempCtx.fillStyle = settings.backgroundColor;
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            }
             
             const scale = settings.scale / 100;
             const scaledWidth = tempCanvas.width * scale;
