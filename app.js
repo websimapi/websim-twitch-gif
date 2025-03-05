@@ -9,27 +9,6 @@
                         break;
 // ... existing code ...
 
-// needs to be updated to
-                    case 'matrix':
-                        const matrixProgress = (progress * 4) % 1;
-                        const matrixY = matrixProgress * 30 * intensityFactor;
-                        const matrixOpacity = 1 - matrixProgress * 0.6;
-                        tempCtx.translate(0, matrixY);
-                        tempCtx.globalAlpha = (settings.opacity / 100) * matrixOpacity;
-                        break;
-                    case 'meteor':
-                        const meteorProgress = progress * 2 % 1;
-                        const meteorX = (meteorProgress - 0.5) * 40 * intensityFactor;
-                        const meteorY = (meteorProgress - 0.5) * 40 * intensityFactor;
-                        const meteorScale = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
-                        const meteorOpacity = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
-                        tempCtx.translate(meteorX, meteorY);
-                        tempCtx.rotate(Math.PI/4);
-                        tempCtx.scale(meteorScale, meteorScale);
-                        tempCtx.globalAlpha = (settings.opacity / 100) * meteorOpacity;
-                        break;
-
-// becomes:
 let frames = [];
 const canvas = document.getElementById('preview');
 const ctx = canvas.getContext('2d');
