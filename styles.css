@@ -1156,3 +1156,43 @@ textarea#imagePrompt {
     0% { transform: translateX(-20px) rotate(0deg); }
     100% { transform: translateX(20px) rotate(360deg); }
 }
+
+@keyframes diagonal-shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-4px, -4px); }
+    75% { transform: translate(4px, 4px); }
+}
+
+@keyframes diagonal-jitter {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(3px, -3px); }
+    66% { transform: translate(-3px, 3px); }
+}
+
+@keyframes diagonal-pulse-shake {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-4px, -4px) scale(1.05); }
+    75% { transform: translate(4px, 4px) scale(0.95); }
+}
+
+@keyframes diagonal-zigzag {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-3px, -3px); }
+    40% { transform: translate(3px, -3px); }
+    60% { transform: translate(-3px, 3px); }
+    80% { transform: translate(3px, 3px); }
+}
+
+@keyframes diagonal-wave-shake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-4px, -4px) rotate(-2deg); }
+    50% { transform: translate(0, 0) rotate(0deg); }
+    75% { transform: translate(4px, 4px) rotate(2deg); }
+}
+
+/* Add preview classes for the new animations */
+.diagonal-shake-preview::after { animation: diagonal-shake 1.5s ease-in-out infinite; }
+.diagonal-jitter-preview::after { animation: diagonal-jitter 1.3s ease-in-out infinite; }
+.diagonal-pulse-shake-preview::after { animation: diagonal-pulse-shake 1.5s ease-in-out infinite; }
+.diagonal-zigzag-preview::after { animation: diagonal-zigzag 1.5s ease-in-out infinite; }
+.diagonal-wave-shake-preview::after { animation: diagonal-wave-shake 1.5s ease-in-out infinite; }

@@ -1166,21 +1166,19 @@ document.getElementById('generateGif').onclick = async function() {
                         let diagX = 0, diagY = 0, diagRotation = 0;
                         
                         if (diagProgress < 1) {
-                            diagX = -15 * intensityFactor * (1 - diagProgress);
-                            diagY = -15 * intensityFactor * (1 - diagProgress);
-                            diagRotation = -5 * (1 - diagProgress);
+                            diagX = diagY = 0;
                         } else if (diagProgress < 2) {
-                            diagX = 0;
-                            diagY = 0;
-                            diagRotation = 5 * (diagProgress - 1);
+                            diagX = 15 * intensityFactor;
+                            diagY = -15 * intensityFactor;
+                            diagRotation = -5 * (diagProgress - 1);
                         } else if (diagProgress < 3) {
-                            diagX = 15 * intensityFactor * (diagProgress - 2);
-                            diagY = 15 * intensityFactor * (diagProgress - 2);
-                            diagRotation = -5 * (diagProgress - 2);
+                            diagX = -15 * intensityFactor;
+                            diagY = 15 * intensityFactor;
+                            diagRotation = 5 * (diagProgress - 2);
                         } else {
-                            diagX = 15 * intensityFactor * (1 - (diagProgress - 3));
-                            diagY = 15 * intensityFactor * (1 - (diagProgress - 3));
-                            diagRotation = 5 * (1 - (diagProgress - 3));
+                            diagX = 15 * intensityFactor;
+                            diagY = 15 * intensityFactor;
+                            diagRotation = -5 * (diagProgress - 3);
                         }
                         
                         tempCtx.translate(diagX, diagY);
@@ -1632,6 +1630,54 @@ document.getElementById('generateGif').onclick = async function() {
                         const tumbleweedScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
                         tempCtx.rotate(tumbleweedAngle);
                         tempCtx.scale(tumbleweedScale, tumbleweedScale);
+                        break;
+                    case 'diagonal-shake':
+                        const diagShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
+                        tempCtx.translate(diagShakeOffset, diagShakeOffset);
+                        break;
+                    case 'diagonal-jitter':
+                        const jitterOffset = (progress * 3) % 3;
+                        let jitterX = 0, jitterY = 0;
+                        if (jitterOffset < 1) {
+                            jitterX = jitterY = 0;
+                        } else if (jitterOffset < 2) {
+                            jitterX = 3 * intensityFactor;
+                            jitterY = -3 * intensityFactor;
+                        } else {
+                            jitterX = -3 * intensityFactor;
+                            jitterY = 3 * intensityFactor;
+                        }
+                        tempCtx.translate(jitterX, jitterY);
+                        break;
+                    case 'diagonal-pulse-shake':
+                        const dpShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
+                        const dpScale = 1 + Math.sin(progress * Math.PI * 2) * 0.05 * intensityFactor;
+                        tempCtx.translate(dpShakeOffset, dpShakeOffset);
+                        tempCtx.scale(dpScale, dpScale);
+                        break;
+                    case 'diagonal-zigzag':
+                        const zigzagPhase = (progress * 5) % 5;
+                        let zigzagX = 0, zigzagY = 0;
+                        if (zigzagPhase < 1) {
+                            zigzagX = zigzagY = 0;
+                        } else if (zigzagPhase < 2) {
+                            zigzagX = zigzagY = -3 * intensityFactor;
+                        } else if (zigzagPhase < 3) {
+                            zigzagX = 3 * intensityFactor;
+                            zigzagY = -3 * intensityFactor;
+                        } else if (zigzagPhase < 4) {
+                            zigzagX = -3 * intensityFactor;
+                            zigzagY = 3 * intensityFactor;
+                        } else {
+                            zigzagX = zigzagY = 3 * intensityFactor;
+                        }
+                        tempCtx.translate(zigzagX, zigzagY);
+                        break;
+                    case 'diagonal-wave-shake':
+                        const waveShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
+                        const waveShakeRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(waveShakeOffset, waveShakeOffset);
+                        tempCtx.rotate(waveShakeRotation);
                         break;
                 }
                 
