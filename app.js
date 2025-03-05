@@ -678,12 +678,6 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
     input.addEventListener('input', updateLivePreview);
 });
 
-// Add rainbow effect checkbox handler
-document.getElementById('rainbowEffect').addEventListener('change', function() {
-    rainbowEffect = this.checked;
-    updateLivePreview();
-});
-
 function updateLivePreview() {
     const previewCanvas = document.getElementById('previewAnimation');
     const ctx = previewCanvas.getContext('2d');
