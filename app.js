@@ -666,10 +666,9 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
     input.addEventListener('input', updateLivePreview);
 });
 
-// Add rainbow effect toggle handler
-document.getElementById('rainbowEffect').addEventListener('click', function() {
-    this.classList.toggle('selected');
-    rainbowEffect = this.classList.contains('selected');
+// Add rainbow effect checkbox handler
+document.getElementById('rainbowEffect').addEventListener('change', function() {
+    rainbowEffect = this.checked;
     updateLivePreview();
 });
 
