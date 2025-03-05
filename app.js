@@ -435,14 +435,22 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
     // Create a selection mask
     const mask = new Uint8Array(sourceCanvas.width * sourceCanvas.height);
     
-    // Flood fill algorithm
+    // Flood fill algorithm with stack size limiting and visit tracking
     const stack = [{x, y}];
+    const visited = new Set(); // Track visited pixels to avoid duplicates
+    const maxStackSize = 10000; // Prevent infinite loops and browser hangs
     
-    while (stack.length > 0) {
+    while (stack.length > 0 && stack.length < maxStackSize) {
         const {x, y} = stack.pop();
         
         if (x < 0 || y < 0 || x >= sourceCanvas.width || y >= sourceCanvas.height)
             continue;
+        
+        const pixelPos = `${x},${y}`;
+        if (visited.has(pixelPos))
+            continue;
+            
+        visited.add(pixelPos);
         
         const index = y * sourceCanvas.width + x;
         
@@ -466,10 +474,11 @@ function magicWandSelect(sourceCanvas, overlayCanvas, x, y) {
         ) {
             mask[index] = 1;
             
-            stack.push({x: x + 1, y});
-            stack.push({x: x - 1, y});
-            stack.push({x, y: y + 1});
-            stack.push({x, y: y - 1});
+            // Add adjacent pixels, only if not yet visited
+            if (!visited.has(`${x+1},${y}`)) stack.push({x: x + 1, y});
+            if (!visited.has(`${x-1},${y}`)) stack.push({x: x - 1, y});
+            if (!visited.has(`${x},${y+1}`)) stack.push({x, y: y + 1});
+            if (!visited.has(`${x},${y-1}`)) stack.push({x, y: y - 1});
         }
     }
     
@@ -511,7 +520,7 @@ function createSelectionPath(mask, width, height) {
     
     if (!hasSelection) return null;
     
-    // Create a simplified path around the selection
+    // Create a path around the selection and visualize the selected pixels
     const path = new Path2D();
     const bounds = {
         left: minX,
@@ -520,6 +529,7 @@ function createSelectionPath(mask, width, height) {
         height: maxY - minY + 1
     };
     
+    // Draw a rectangle around the selection
     path.rect(minX, minY, bounds.width, bounds.height);
     
     return { path, bounds };
@@ -902,10 +912,10 @@ document.getElementById('generateGif').onclick = async function() {
             const scaledHeight = tempCanvas.height * scale;
             const x = (tempCanvas.width - scaledWidth) / 2;
             const y = (tempCanvas.height - scaledHeight) / 2;
-            
+
             const effectiveWidth = scaledWidth;
             const effectiveHeight = scaledHeight;
-            
+
             tempCtx.save();
             
             // Apply animation transforms to the context
