@@ -804,6 +804,46 @@ function generateAnimationCSS(animationType) {
             return `liquid ${duration}s ease-in-out infinite`;
         case 'warp-drive':
             return `warpDrive ${duration}s linear infinite`;
+        case 'micro-bounce':
+            return `microBounce ${duration}s ease-in-out infinite`;
+        case 'shatter':
+            return `shatter ${duration}s ease-in-out infinite`;
+        case 'clock':
+            return `clock ${duration}s linear infinite`;
+        case 'slime':
+            return `slime ${duration}s ease-in-out infinite`;
+        case 'paper-plane':
+            return `paperPlane ${duration}s ease-in-out infinite`;
+        case 'bubble-pop':
+            return `bubblePop ${duration}s ease-in-out infinite`;
+        case 'vibrate':
+            return `vibrate ${duration}s linear infinite`;
+        case 'firework':
+            return `firework ${duration}s ease-out infinite`;
+        case 'magnet':
+            return `magnet ${duration}s ease-in-out infinite`;
+        case 'pulse-rings':
+            return `pulseRings ${duration}s ease-in-out infinite`;
+        case 'drip':
+            return `drip ${duration}s ease-in-out infinite`;
+        case 'ricochet':
+            return `ricochet ${duration}s ease-in-out infinite`;
+        case 'flip-3d':
+            return `flip3D ${duration}s ease-in-out infinite`;
+        case 'thunder':
+            return `thunder ${duration}s ease-in-out infinite`;
+        case 'tv-static':
+            return `tvStatic ${duration}s step-end infinite`;
+        case 'flip-coin':
+            return `flipCoin ${duration}s linear infinite`;
+        case 'matrix':
+            return `matrix ${duration}s step-end infinite`;
+        case 'meteor':
+            return `meteor ${duration}s linear infinite`;
+        case 'pendulum-wave':
+            return `pendulumWave ${duration}s ease-in-out infinite`;
+        case 'tumbleweed':
+            return `tumbleweed ${duration}s linear infinite`;
         default:
             return '';
     }
@@ -1007,10 +1047,10 @@ document.getElementById('generateGif').onclick = async function() {
                         } else if (cycle < 2) { // Top-right to bottom-right
                             xOffset = 10 * intensityFactor;
                             yOffset = (cycle - 1) * 10 * intensityFactor - 5 * intensityFactor;
-                        } else if (cycle < 3) { // Bottom-right to bottom-left
+                        } else if (cycle < 3) { // Bottom-right to bottom
                             xOffset = (3 - cycle) * 10 * intensityFactor;
                             yOffset = 5 * intensityFactor;
-                        } else { // Bottom-left to top-left
+                        } else { // Bottom to top-left
                             xOffset = -10 * intensityFactor;
                             yOffset = (4 - cycle) * 10 * intensityFactor - 5 * intensityFactor;
                         }
@@ -1426,6 +1466,132 @@ document.getElementById('generateGif').onclick = async function() {
                         tempCtx.rotate(wdRotation);
                         tempCtx.scale(wdScale, wdScale);
                         // Would apply filter effects in CSS
+                        break;
+                    case 'micro-bounce':
+                        const microScale = 1 + Math.sin(progress * Math.PI * 2) * 0.1 * intensityFactor;
+                        tempCtx.scale(microScale, microScale);
+                        break;
+                    case 'shatter':
+                        const shatterAngle = progress * Math.PI * 2;
+                        const shatterScale = 0.8 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.2 * intensityFactor;
+                        tempCtx.rotate(shatterAngle);
+                        tempCtx.scale(shatterScale, shatterScale);
+                        break;
+                    case 'clock':
+                        const clockAngle = progress * Math.PI * 2;
+                        tempCtx.rotate(clockAngle);
+                        break;
+                    case 'slime':
+                        const slimeY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        const slimeRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(0, slimeY);
+                        tempCtx.rotate(slimeRotation);
+                        break;
+                    case 'paper-plane':
+                        const planeAngle = progress * Math.PI * 2;
+                        const planeScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                        tempCtx.rotate(planeAngle);
+                        tempCtx.scale(planeScale, planeScale);
+                        break;
+                    case 'bubble-pop':
+                        const bubbleScale = 1 + Math.sin(progress * Math.PI * 2) * 0.1 * intensityFactor;
+                        tempCtx.scale(bubbleScale, bubbleScale);
+                        break;
+                    case 'vibrate':
+                        const vibrateScale = 1 + Math.sin(progress * Math.PI * 8) * 0.05 * intensityFactor;
+                        tempCtx.scale(vibrateScale, vibrateScale);
+                        break;
+                    case 'firework':
+                        const fireworkScale = 1 + Math.sin(progress * Math.PI * 2) * 0.3 * intensityFactor;
+                        tempCtx.scale(fireworkScale, fireworkScale);
+                        break;
+                    case 'magnet':
+                        const magnetAngle = progress * Math.PI * 2;
+                        tempCtx.rotate(magnetAngle);
+                        break;
+                    case 'pulse-rings':
+                        const pulseRingsScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                        tempCtx.scale(pulseRingsScale, pulseRingsScale);
+                        break;
+                    case 'drip':
+                        const dripY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        tempCtx.translate(0, dripY);
+                        break;
+                    case 'ricochet':
+                        const ricochetAngle = progress * Math.PI * 2;
+                        const ricochetScale = 0.8 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.2 * intensityFactor;
+                        tempCtx.rotate(ricochetAngle);
+                        tempCtx.scale(ricochetScale, ricochetScale);
+                        break;
+                    case 'flip-3d':
+                        const flip3DProgress = progress * 4 % 4;
+                        let flip3DY = 0, flip3DRotationY = 0;
+                        
+                        if (flip3DProgress < 1) {
+                            flip3DY = -10 * intensityFactor * Math.sin(flip3DProgress * Math.PI);
+                            flip3DRotationY = flip3DProgress * 90;
+                        } else if (flip3DProgress < 2) {
+                            flip3DRotationY = 90 + (flip3DProgress - 1) * 90;
+                        } else if (flip3DProgress < 3) {
+                            flip3DY = -10 * intensityFactor * Math.sin((flip3DProgress - 2) * Math.PI);
+                            flip3DRotationY = 180 + (flip3DProgress - 2) * 90;
+                        } else {
+                            flip3DRotationY = 270 + (flip3DProgress - 3) * 90;
+                        }
+                        
+                        tempCtx.translate(0, flip3DY);
+                        // Simulate 3D rotation by scaling
+                        const flip3DScaleX = Math.abs(Math.cos(flip3DRotationY * Math.PI / 180));
+                        tempCtx.scale(flip3DScaleX, 1);
+                        break;
+                    case 'thunder':
+                        const thunderAngle = progress * Math.PI * 2;
+                        tempCtx.rotate(thunderAngle);
+                        break;
+                    case 'tv-static':
+                        const tvStaticScale = 1 + Math.sin(progress * Math.PI * 10) * 0.1 * intensityFactor;
+                        tempCtx.scale(tvStaticScale, tvStaticScale);
+                        break;
+                    case 'flip-coin':
+                        const flipCoinProgress = progress * 4 % 4;
+                        let flipCoinY = 0, flipCoinRotationY = 0;
+                        
+                        if (flipCoinProgress < 1) {
+                            flipCoinY = -10 * intensityFactor * Math.sin(flipCoinProgress * Math.PI);
+                            flipCoinRotationY = flipCoinProgress * 90;
+                        } else if (flipCoinProgress < 2) {
+                            flipCoinRotationY = 90 + (flipCoinProgress - 1) * 90;
+                        } else if (flipCoinProgress < 3) {
+                            flipCoinY = -10 * intensityFactor * Math.sin((flipCoinProgress - 2) * Math.PI);
+                            flipCoinRotationY = 180 + (flipCoinProgress - 2) * 90;
+                        } else {
+                            flipCoinRotationY = 270 + (flipCoinProgress - 3) * 90;
+                        }
+                        
+                        tempCtx.translate(0, flipCoinY);
+                        // Simulate 3D rotation by scaling
+                        const flipCoinScaleX = Math.abs(Math.cos(flipCoinRotationY * Math.PI / 180));
+                        tempCtx.scale(flipCoinScaleX, 1);
+                        break;
+                    case 'matrix':
+                        const matrixY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        tempCtx.translate(0, matrixY);
+                        break;
+                    case 'meteor':
+                        const meteorAngle = progress * Math.PI * 2;
+                        tempCtx.rotate(meteorAngle);
+                        break;
+                    case 'pendulum-wave':
+                        const pendulumWaveY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        const pendulumWaveRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(0, pendulumWaveY);
+                        tempCtx.rotate(pendulumWaveRotation);
+                        break;
+                    case 'tumbleweed':
+                        const tumbleweedAngle = progress * Math.PI * 2;
+                        const tumbleweedScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                        tempCtx.rotate(tumbleweedAngle);
+                        tempCtx.scale(tumbleweedScale, tumbleweedScale);
                         break;
                 }
                 
