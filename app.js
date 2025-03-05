@@ -135,6 +135,18 @@ function generateAnimationCSS(animation) {
             return `flip ${speed}s ease-in-out infinite`;
         case 'swing':
             return `swing ${speed}s ease-in-out infinite`;
+        case 'zoom':
+            return `zoom ${speed}s ease-in-out infinite`;
+        case 'spin':
+            return `spin ${speed}s ease-in-out infinite`;
+        case 'wiggle':
+            return `wiggle ${speed}s ease-in-out infinite`;
+        case 'squeeze':
+            return `squeeze ${speed}s ease-in-out infinite`;
+        case 'slide':
+            return `slide ${speed}s ease-in-out infinite`;
+        case 'glitch':
+            return `glitch ${speed}s ease-in-out infinite`;
         default:
             return 'none';
     }
@@ -238,6 +250,36 @@ document.getElementById('generateGif').onclick = async function() {
                     case 'swing':
                         const swingAngle = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
                         tempCtx.rotate(swingAngle);
+                        break;
+                    case 'zoom':
+                        const zoomScale = 1 - Math.abs(Math.sin(progress * Math.PI * 2)) * 0.3 * intensityFactor;
+                        tempCtx.scale(zoomScale, zoomScale);
+                        break;
+                    case 'spin':
+                        const spinRotation = progress * Math.PI * 2;
+                        const spinScale = 1 - Math.abs(Math.sin(progress * Math.PI)) * 0.2 * intensityFactor;
+                        tempCtx.rotate(spinRotation);
+                        tempCtx.scale(spinScale, spinScale);
+                        break;
+                    case 'wiggle':
+                        const wiggleAngle = Math.sin(progress * Math.PI * 4) * 10 * intensityFactor * (Math.PI / 180);
+                        tempCtx.transform(1, 0, Math.tan(wiggleAngle), 1, 0, 0);
+                        break;
+                    case 'squeeze':
+                        const squeezeX = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                        const squeezeY = 1 - Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
+                        tempCtx.scale(squeezeX, squeezeY);
+                        break;
+                    case 'slide':
+                        const slideOffset = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                        tempCtx.translate(slideOffset, 0);
+                        break;
+                    case 'glitch':
+                        if (progress * 10 % 1 < 0.3) {
+                            const glitchX = (Math.random() - 0.5) * 8 * intensityFactor;
+                            const glitchY = (Math.random() - 0.5) * 8 * intensityFactor;
+                            tempCtx.translate(glitchX, glitchY);
+                        }
                         break;
                 }
                 

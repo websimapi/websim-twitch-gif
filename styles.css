@@ -202,6 +202,12 @@ label {
 .pulse-preview::after { animation: pulse 1s ease-in-out infinite; }
 .flip-preview::after { animation: flip 1.5s ease-in-out infinite; }
 .swing-preview::after { animation: swing 1.5s ease-in-out infinite; }
+.zoom-preview::after { animation: zoom 1.5s ease-in-out infinite; }
+.spin-preview::after { animation: spin 1.5s ease-in-out infinite; }
+.wiggle-preview::after { animation: wiggle 1s ease-in-out infinite; }
+.squeeze-preview::after { animation: squeeze 1.5s ease-in-out infinite; }
+.slide-preview::after { animation: slide 1.5s ease-in-out infinite; }
+.glitch-preview::after { animation: glitch 1.5s ease-in-out infinite; }
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -239,4 +245,40 @@ label {
     0%, 100% { transform: rotate(0deg); }
     25% { transform: rotate(15deg); }
     75% { transform: rotate(-15deg); }
+}
+
+@keyframes zoom {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.5); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(0.8); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: skewX(0deg); }
+    25% { transform: skewX(10deg); }
+    75% { transform: skewX(-10deg); }
+}
+
+@keyframes squeeze {
+    0%, 100% { transform: scaleX(1) scaleY(1); }
+    50% { transform: scaleX(1.2) scaleY(0.8); }
+}
+
+@keyframes slide {
+    0% { transform: translateX(-15px); }
+    50% { transform: translateX(15px); }
+    100% { transform: translateX(-15px); }
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-5px, 5px); }
+    40% { transform: translate(5px, -5px); }
+    60% { transform: translate(-3px, -3px); }
+    80% { transform: translate(3px, 3px); }
 }
