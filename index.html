@@ -1,226 +1,16 @@
 <html>
 <head>
     <base href="." />
-    <title>Twitch Emote Animator</title>
+    <title>Twitch GIF Maker</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Twitch Emote Animator</h1>
-        <p class="subtitle">Create animated GIFs for Twitch, Discord and more</p>
+        <h1>Twitch GIF Maker</h1>
         
-        <!-- Main working area -->
-        <div class="main-area">
-            <!-- Preview section -->
-            <div class="preview-section">
-                <h2>Preview</h2>
-                <div class="preview-wrapper">
-                    <div class="preview-container">
-                        <canvas id="preview" width="112" height="112"></canvas>
-                        <div class="preview-label">Original</div>
-                    </div>
-                    <div class="live-preview" id="livePreview">
-                        <canvas id="previewAnimation" width="112" height="112"></canvas>
-                        <div class="preview-label">Animated</div>
-                    </div>
-                </div>
-                
-                <div class="quick-tools">
-                    <button id="editImage" class="btn primary"><i class="icon-edit"></i> Edit Image</button>
-                    <button id="clearCanvas" class="btn secondary"><i class="icon-trash"></i> Clear</button>
-                    <button id="generateGif" class="btn highlight"><i class="icon-download"></i> Generate GIF</button>
-                </div>
-            </div>
-            
-            <!-- Image upload section -->
-            <div class="upload-section">
-                <div class="upload-area" id="dropZone">
-                    <i class="icon-upload"></i>
-                    <p>Drag & drop image or click to upload</p>
-                    <input type="file" id="fileInput" accept="image/*" multiple>
-                </div>
-                
-                <div class="ai-quick-access">
-                    <button id="showAiPanel" class="btn secondary"><i class="icon-magic"></i> AI Image Generator</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tabs for settings -->
-        <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="animations-tab">Animations</button>
-                <button class="tab-btn" data-tab="settings-tab">Settings</button>
-                <button class="tab-btn" data-tab="ai-tab">AI Generator</button>
-            </div>
-            
-            <!-- Animations Tab -->
-            <div class="tab-content active" id="animations-tab">
-                <div class="animation-search">
-                    <input type="text" id="animationSearch" placeholder="Search animations...">
-                    <div class="view-options">
-                        <button id="viewFavorites" class="btn small"><i class="icon-star"></i> Favorites</button>
-                        <button id="viewAll" class="btn small active">All</button>
-                        <select id="animationCategory">
-                            <option value="all">All Categories</option>
-                            <option value="basic">Basic</option>
-                            <option value="bounce">Bounce</option>
-                            <option value="rotate">Rotation</option>
-                            <option value="shake">Shake</option>
-                            <option value="zoom">Zoom</option>
-                            <option value="special">Special</option>
-                            <option value="subtle">Subtle</option>
-                            <option value="diagonal">Diagonal</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="animation-options">
-                    <!-- Animation options will be populated dynamically by JavaScript with categories -->
-                </div>
-                
-                <div class="animation-settings">
-                    <div class="setting-item">
-                        <label for="animationSpeed">Animation Speed</label>
-                        <div class="slider-with-value">
-                            <input type="range" id="animationSpeed" min="0.5" max="3" step="0.1" value="1">
-                            <span id="animationSpeedValue">1x</span>
-                        </div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="animationIntensity">Animation Intensity</label>
-                        <div class="slider-with-value">
-                            <input type="range" id="animationIntensity" min="1" max="10" value="5">
-                            <span id="animationIntensityValue">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Settings Tab -->
-            <div class="tab-content" id="settings-tab">
-                <div class="settings-panel">
-                    <div class="settings-group">
-                        <h3>Image Settings</h3>
-                        <div class="image-settings">
-                            <div class="setting-item">
-                                <label>Background Color</label>
-                                <div class="color-picker">
-                                    <input type="checkbox" id="enableBackground" checked>
-                                    <input type="color" id="backgroundColor" value="#000000">
-                                    <span id="backgroundColorValue">#000000</span>
-                                </div>
-                            </div>
-                            <div class="setting-item">
-                                <label for="opacity">Opacity (%)</label>
-                                <div class="slider-with-value">
-                                    <input type="range" id="opacity" min="0" max="100" value="100">
-                                    <span id="opacityValue">100%</span>
-                                </div>
-                            </div>
-                            <div class="setting-item">
-                                <label for="scale">Scale (%)</label>
-                                <div class="slider-with-value">
-                                    <input type="range" id="scale" min="10" max="100" value="100">
-                                    <span id="scaleValue">100%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3>Special Effects</h3>
-                        <div class="special-effects">
-                            <div class="effect-option" data-effect="rainbow">
-                                <div class="animation-preview rainbow-preview"></div>
-                                Rainbow Effect
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3>Preview Settings</h3>
-                        <div class="setting-item">
-                            <label for="previewMode">Preview Mode</label>
-                            <div class="toggle-switch fancy">
-                                <input type="checkbox" id="previewMode">
-                                <label for="previewMode"></label>
-                                <span class="toggle-labels">
-                                    <span class="off">CSS</span>
-                                    <span class="on">GIF</span>
-                                </span>
-                            </div>
-                            <span class="toggle-description">CSS preview (fast) / GIF preview (accurate but slower)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <h3>Output Settings</h3>
-                        <div class="setting-item">
-                            <label for="fps">FPS:</label>
-                            <div class="slider-with-value">
-                                <input type="range" id="fps" min="1" max="60" value="30">
-                                <span id="fpsValue">30 FPS</span>
-                            </div>
-                        </div>
-                        
-                        <div class="setting-item">
-                            <label for="quality">Quality:</label>
-                            <div class="slider-with-value">
-                                <input type="range" id="quality" min="1" max="10" value="7">
-                                <span id="qualityValue">7</span>
-                            </div>
-                        </div>
-
-                        <div class="setting-item">
-                            <label for="duration">Duration:</label>
-                            <div class="slider-with-value">
-                                <input type="range" id="duration" min="1" max="10" value="3">
-                                <span id="durationValue">3s</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- AI Generator Tab -->
-            <div class="tab-content" id="ai-tab">
-                <div class="settings-panel">
-                    <div class="settings-group">
-                        <h3>AI Image Generation</h3>
-                        <div class="ai-generation-container">
-                            <div class="setting-item">
-                                <label for="imagePrompt">Image Description:</label>
-                                <textarea id="imagePrompt" placeholder="Describe the image you want to generate..."></textarea>
-                            </div>
-                            <div class="setting-item">
-                                <label for="aspectRatio">Aspect Ratio:</label>
-                                <select id="aspectRatio">
-                                    <option value="1:1">1:1 (Square)</option>
-                                    <option value="16:9">16:9</option>
-                                    <option value="3:2">3:2</option>
-                                    <option value="4:3">4:3</option>
-                                </select>
-                            </div>
-                            <div class="advanced-mode">
-                                <div class="toggle-switch fancy">
-                                    <input type="checkbox" id="advancedMode">
-                                    <label for="advancedMode"></label>
-                                    <span class="toggle-description">Advanced Mode (Let AI enhance your prompt)</span>
-                                </div>
-                            </div>
-                            <button id="generateImage" class="btn highlight"><i class="icon-magic"></i> Generate Image</button>
-                            <div id="generationStatus" class="generation-status"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Image Editor Panel (this remains hidden until needed) -->
+        <!-- Image Editor Section -->
         <div class="settings-panel" id="imageEditorPanel" style="display: none;">
-            <!-- Image Editor Section -->
             <div class="settings-group">
                 <h3>Image Editor</h3>
                 <div class="editor-tools">
@@ -293,12 +83,516 @@
                 </div>
             </div>
         </div>
+        
+        <div class="preview-wrapper">
+            <div class="preview-container">
+                <canvas id="preview" width="112" height="112"></canvas>
+            </div>
+            <div class="live-preview" id="livePreview">
+                <canvas id="previewAnimation" width="112" height="112"></canvas>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="settings-panel">
+                <div class="settings-group">
+                    <h3>Image Settings</h3>
+                    <div class="image-settings">
+                        <div class="setting-item">
+                            <label>Background Color</label>
+                            <div class="color-picker">
+                                <input type="checkbox" id="enableBackground" checked>
+                                <input type="color" id="backgroundColor" value="#000000">
+                                <span id="backgroundColorValue">#000000</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="opacity">Opacity (%)</label>
+                            <input type="range" id="opacity" min="0" max="100" value="100">
+                        </div>
+                        <div class="setting-item">
+                            <label for="scale">Scale (%)</label>
+                            <input type="range" id="scale" min="10" max="100" value="100">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Animation Settings</h3>
+                    <div class="setting-item">
+                        <label for="animationSpeed">Animation Speed</label>
+                        <input type="range" id="animationSpeed" min="0.5" max="3" step="0.1" value="1">
+                        <span id="animationSpeedValue">1x</span>
+                    </div>
+                    <div class="setting-item">
+                        <label for="animationIntensity">Animation Intensity</label>
+                        <input type="range" id="animationIntensity" min="1" max="10" value="5">
+                        <span id="animationIntensityValue">5</span>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>Special Effects</h3>
+                    <div class="special-effects">
+                        <div class="effect-option" data-effect="rainbow">
+                            <div class="animation-preview rainbow-preview"></div>
+                            Rainbow Effect
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <label for="fileInput">Upload Images (PNG/JPG):</label>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <button id="editImage">Edit Image</button>
+            
+            <label>Animation Style:</label>
+            <div class="animation-options">
+                <div class="animation-option selected" data-animation="none">
+                    <div class="animation-preview"></div>
+                    None
+                </div>
+                <div class="animation-option" data-animation="rotate">
+                    <div class="animation-preview rotate-preview"></div>
+                    Rotate
+                </div>
+                <div class="animation-option" data-animation="bounce">
+                    <div class="animation-preview bounce-preview"></div>
+                    Bounce
+                </div>
+                <div class="animation-option" data-animation="fade">
+                    <div class="animation-preview fade-preview"></div>
+                    Fade
+                </div>
+                <div class="animation-option" data-animation="shake">
+                    <div class="animation-preview shake-preview"></div>
+                    Shake
+                </div>
+                <div class="animation-option" data-animation="pulse">
+                    <div class="animation-preview pulse-preview"></div>
+                    Pulse
+                </div>
+                <div class="animation-option" data-animation="flip">
+                    <div class="animation-preview flip-preview"></div>
+                    Flip
+                </div>
+                <div class="animation-option" data-animation="swing">
+                    <div class="animation-preview swing-preview"></div>
+                    Swing
+                </div>
+                <div class="animation-option" data-animation="zoom">
+                    <div class="animation-preview zoom-preview"></div>
+                    Zoom
+                </div>
+                <div class="animation-option" data-animation="spin">
+                    <div class="animation-preview spin-preview"></div>
+                    Spin
+                </div>
+                <div class="animation-option" data-animation="wiggle">
+                    <div class="animation-preview wiggle-preview"></div>
+                    Wiggle
+                </div>
+                <div class="animation-option" data-animation="squeeze">
+                    <div class="animation-preview squeeze-preview"></div>
+                    Squeeze
+                </div>
+                <div class="animation-option" data-animation="slide">
+                    <div class="animation-preview slide-preview"></div>
+                    Slide
+                </div>
+                <div class="animation-option" data-animation="glitch">
+                    <div class="animation-preview glitch-preview"></div>
+                    Glitch
+                </div>
+                <div class="animation-option" data-animation="bounce-around">
+                    <div class="animation-preview bounce-around-preview"></div>
+                    Bounce Around
+                </div>
+                <div class="animation-option" data-animation="float">
+                    <div class="animation-preview float-preview"></div>
+                    Float
+                </div>
+                <div class="animation-option" data-animation="spiral">
+                    <div class="animation-preview spiral-preview"></div>
+                    Spiral
+                </div>
+                <div class="animation-option" data-animation="throb">
+                    <div class="animation-preview throb-preview"></div>
+                    Throb
+                </div>
+                <div class="animation-option" data-animation="heartbeat">
+                    <div class="animation-preview heartbeat-preview"></div>
+                    Heartbeat
+                </div>
+                <div class="animation-option" data-animation="jello">
+                    <div class="animation-preview jello-preview"></div>
+                    Jello
+                </div>
+                <div class="animation-option" data-animation="pendulum">
+                    <div class="animation-preview pendulum-preview"></div>
+                    Pendulum
+                </div>
+                <div class="animation-option" data-animation="blink">
+                    <div class="animation-preview blink-preview"></div>
+                    Blink
+                </div>
+                <div class="animation-option" data-animation="tornado">
+                    <div class="animation-preview tornado-preview"></div>
+                    Tornado
+                </div>
+                <div class="animation-option" data-animation="orbit">
+                    <div class="animation-preview orbit-preview"></div>
+                    Orbit
+                </div>
+                <div class="animation-option" data-animation="diagonal-bounce">
+                    <div class="animation-preview diagonal-bounce-preview"></div>
+                    Diagonal Bounce
+                </div>
+                <div class="animation-option" data-animation="pixelate">
+                    <div class="animation-preview pixelate-preview"></div>
+                    Pixelate
+                </div>
+                <div class="animation-option" data-animation="sway">
+                    <div class="animation-preview sway-preview"></div>
+                    Sway
+                </div>
+                <div class="animation-option" data-animation="ripple">
+                    <div class="animation-preview ripple-preview"></div>
+                    Ripple
+                </div>
+                <div class="animation-option" data-animation="split-shift">
+                    <div class="animation-preview split-shift-preview"></div>
+                    Split Shift
+                </div>
+                <div class="animation-option" data-animation="confetti">
+                    <div class="animation-preview confetti-preview"></div>
+                    Confetti
+                </div>
+                <div class="animation-option" data-animation="wave">
+                    <div class="animation-preview wave-preview"></div>
+                    Wave
+                </div>
+                <div class="animation-option" data-animation="jump-rope">
+                    <div class="animation-preview jump-rope-preview"></div>
+                    Jump Rope
+                </div>
+                <div class="animation-option" data-animation="typewriter">
+                    <div class="animation-preview typewriter-preview"></div>
+                    Typewriter
+                </div>
+                <div class="animation-option" data-animation="bounce-flip">
+                    <div class="animation-preview bounce-flip-preview"></div>
+                    Bounce Flip
+                </div>
+                <div class="animation-option" data-animation="dizzy">
+                    <div class="animation-preview dizzy-preview"></div>
+                    Dizzy
+                </div>
+                <div class="animation-option" data-animation="dance">
+                    <div class="animation-preview dance-preview"></div>
+                    Dance
+                </div>
+                <div class="animation-option" data-animation="elastic">
+                    <div class="animation-preview elastic-preview"></div>
+                    Elastic
+                </div>
+                <div class="animation-option" data-animation="shadow-play">
+                    <div class="animation-preview shadow-play-preview"></div>
+                    Shadow Play
+                </div>
+                <div class="animation-option" data-animation="bounce-rotate">
+                    <div class="animation-preview bounce-rotate-preview"></div>
+                    Bounce Rotate
+                </div>
+                <div class="animation-option" data-animation="party-mode">
+                    <div class="animation-preview party-mode-preview"></div>
+                    Party Mode
+                </div>
+                <div class="animation-option" data-animation="rolling">
+                    <div class="animation-preview rolling-preview"></div>
+                    Rolling
+                </div>
+                <div class="animation-option" data-animation="kaleidoscope">
+                    <div class="animation-preview kaleidoscope-preview"></div>
+                    Kaleidoscope
+                </div>
+                <div class="animation-option" data-animation="wobble">
+                    <div class="animation-preview wobble-preview"></div>
+                    Wobble
+                </div>
+                <div class="animation-option" data-animation="teleport">
+                    <div class="animation-preview teleport-preview"></div>
+                    Teleport
+                </div>
+                <div class="animation-option" data-animation="pinwheel">
+                    <div class="animation-preview pinwheel-preview"></div>
+                    Pinwheel
+                </div>
+                <div class="animation-option" data-animation="bounce-orbit">
+                    <div class="animation-preview bounce-orbit-preview"></div>
+                    Bounce Orbit
+                </div>
+                <div class="animation-option" data-animation="hyperspeed">
+                    <div class="animation-preview hyperspeed-preview"></div>
+                    Hyperspeed
+                </div>
+                <div class="animation-option" data-animation="color-pulse">
+                    <div class="animation-preview color-pulse-preview"></div>
+                    Color Pulse
+                </div>
+                <div class="animation-option" data-animation="pixel-shuffle">
+                    <div class="animation-preview pixel-shuffle-preview"></div>
+                    Pixel Shuffle
+                </div>
+                <div class="animation-option" data-animation="glitch-out">
+                    <div class="animation-preview glitch-out-preview"></div>
+                    Glitch Out
+                </div>
+                <div class="animation-option" data-animation="liquid">
+                    <div class="animation-preview liquid-preview"></div>
+                    Liquid
+                </div>
+                <div class="animation-option" data-animation="warp-drive">
+                    <div class="animation-preview warp-drive-preview"></div>
+                    Warp Drive
+                </div>
+                <div class="animation-option" data-animation="neon-flash">
+                    <div class="animation-preview neon-flash-preview"></div>
+                    Neon Flash
+                </div>
+                <div class="animation-option" data-animation="spin-zoom">
+                    <div class="animation-preview spin-zoom-preview"></div>
+                    Spin Zoom
+                </div>
+                <div class="animation-option" data-animation="bounce-wave">
+                    <div class="animation-preview bounce-wave-preview"></div>
+                    Bounce Wave
+                </div>
+                <div class="animation-option" data-animation="micro-bounce">
+                    <div class="animation-preview micro-bounce-preview"></div>
+                    Micro Bounce
+                </div>
+                <div class="animation-option" data-animation="shatter">
+                    <div class="animation-preview shatter-preview"></div>
+                    Shatter
+                </div>
+                <div class="animation-option" data-animation="clock">
+                    <div class="animation-preview clock-preview"></div>
+                    Clock
+                </div>
+                <div class="animation-option" data-animation="slime">
+                    <div class="animation-preview slime-preview"></div>
+                    Slime
+                </div>
+                <div class="animation-option" data-animation="paper-plane">
+                    <div class="animation-preview paper-plane-preview"></div>
+                    Paper Plane
+                </div>
+                <div class="animation-option" data-animation="bubble-pop">
+                    <div class="animation-preview bubble-pop-preview"></div>
+                    Bubble Pop
+                </div>
+                <div class="animation-option" data-animation="vibrate">
+                    <div class="animation-preview vibrate-preview"></div>
+                    Vibrate
+                </div>
+                <div class="animation-option" data-animation="firework">
+                    <div class="animation-preview firework-preview"></div>
+                    Firework
+                </div>
+                <div class="animation-option" data-animation="magnet">
+                    <div class="animation-preview magnet-preview"></div>
+                    Magnet
+                </div>
+                <div class="animation-option" data-animation="pulse-rings">
+                    <div class="animation-preview pulse-rings-preview"></div>
+                    Pulse Rings
+                </div>
+                <div class="animation-option" data-animation="drip">
+                    <div class="animation-preview drip-preview"></div>
+                    Drip
+                </div>
+                <div class="animation-option" data-animation="ricochet">
+                    <div class="animation-preview ricochet-preview"></div>
+                    Ricochet
+                </div>
+                <div class="animation-option" data-animation="flip-3d">
+                    <div class="animation-preview flip-3d-preview"></div>
+                    Flip 3D
+                </div>
+                <div class="animation-option" data-animation="thunder">
+                    <div class="animation-preview thunder-preview"></div>
+                    Thunder
+                </div>
+                <div class="animation-option" data-animation="tv-static">
+                    <div class="animation-preview tv-static-preview"></div>
+                    TV Static
+                </div>
+                <div class="animation-option" data-animation="flip-coin">
+                    <div class="animation-preview flip-coin-preview"></div>
+                    Flip Coin
+                </div>
+                <div class="animation-option" data-animation="matrix">
+                    <div class="animation-preview matrix-preview"></div>
+                    Matrix
+                </div>
+                <div class="animation-option" data-animation="meteor">
+                    <div class="animation-preview meteor-preview"></div>
+                    Meteor
+                </div>
+                <div class="animation-option" data-animation="pendulum-wave">
+                    <div class="animation-preview pendulum-wave-preview"></div>
+                    Pendulum Wave
+                </div>
+                <div class="animation-option" data-animation="tumbleweed">
+                    <div class="animation-preview tumbleweed-preview"></div>
+                    Tumbleweed
+                </div>
+                <div class="animation-option" data-animation="gentle-shake">
+                    <div class="animation-preview gentle-shake-preview"></div>
+                    Gentle Shake
+                </div>
+                <div class="animation-option" data-animation="tiny-jump">
+                    <div class="animation-preview tiny-jump-preview"></div>
+                    Tiny Jump
+                </div>
+                <div class="animation-option" data-animation="subtle-pulse">
+                    <div class="animation-preview subtle-pulse-preview"></div>
+                    Subtle Pulse
+                </div>
+                <div class="animation-option" data-animation="soft-wobble">
+                    <div class="animation-preview soft-wobble-preview"></div>
+                    Soft Wobble
+                </div>
+                <div class="animation-option" data-animation="micro-spin">
+                    <div class="animation-preview micro-spin-preview"></div>
+                    Micro Spin
+                </div>
+                <div class="animation-option" data-animation="mini-orbit">
+                    <div class="animation-preview mini-orbit-preview"></div>
+                    Mini Orbit
+                </div>
+                <div class="animation-option" data-animation="light-flicker">
+                    <div class="animation-preview light-flicker-preview"></div>
+                    Light Flicker
+                </div>
+                <div class="animation-option" data-animation="smooth-slide">
+                    <div class="animation-preview smooth-slide-preview"></div>
+                    Smooth Slide
+                </div>
+                <div class="animation-option" data-animation="tiny-twist">
+                    <div class="animation-preview tiny-twist-preview"></div>
+                    Tiny Twist
+                </div>
+                <div class="animation-option" data-animation="quick-pulse">
+                    <div class="animation-preview quick-pulse-preview"></div>
+                    Quick Pulse
+                </div>
+                <div class="animation-option" data-animation="mini-rotate">
+                    <div class="animation-preview mini-rotate-preview"></div>
+                    Mini Rotate
+                </div>
+                <div class="animation-option" data-animation="soft-breathe">
+                    <div class="animation-preview soft-breathe-preview"></div>
+                    Soft Breathe
+                </div>
+                <div class="animation-option" data-animation="nano-bounce">
+                    <div class="animation-preview nano-bounce-preview"></div>
+                    Nano Bounce
+                </div>
+                <div class="animation-option" data-animation="subtle-wave">
+                    <div class="animation-preview subtle-wave-preview"></div>
+                    Subtle Wave
+                </div>
+                <div class="animation-option" data-animation="gentle-rock">
+                    <div class="animation-preview gentle-rock-preview"></div>
+                    Gentle Rock
+                </div>
+                <div class="animation-option" data-animation="tiny-bounce">
+                    <div class="animation-preview tiny-bounce-preview"></div>
+                    Tiny Bounce
+                </div>
+                <div class="animation-option" data-animation="micro-waggle">
+                    <div class="animation-preview micro-waggle-preview"></div>
+                    Micro Waggle
+                </div>
+                <div class="animation-option" data-animation="soft-vibrate">
+                    <div class="animation-preview soft-vibrate-preview"></div>
+                    Soft Vibrate
+                </div>
+                <div class="animation-option" data-animation="micro-float">
+                    <div class="animation-preview micro-float-preview"></div>
+                    Micro Float
+                </div>
+                <div class="animation-option" data-animation="subtle-throb">
+                    <div class="animation-preview subtle-throb-preview"></div>
+                    Subtle Throb
+                </div>
+                <div class="animation-option" data-animation="diagonal-shake">
+                    <div class="animation-preview diagonal-shake-preview"></div>
+                    Diagonal Shake
+                </div>
+                <div class="animation-option" data-animation="diagonal-jitter">
+                    <div class="animation-preview diagonal-jitter-preview"></div>
+                    Diagonal Jitter
+                </div>
+                <div class="animation-option" data-animation="diagonal-pulse-shake">
+                    <div class="animation-preview diagonal-pulse-shake-preview"></div>
+                    Diagonal Pulse Shake
+                </div>
+                <div class="animation-option" data-animation="diagonal-zigzag">
+                    <div class="animation-preview diagonal-zigzag-preview"></div>
+                    Diagonal Zigzag
+                </div>
+                <div class="animation-option" data-animation="diagonal-wave-shake">
+                    <div class="animation-preview diagonal-wave-shake-preview"></div>
+                    Diagonal Wave Shake
+                </div>
+            </div>
+            
+            <label for="fps">FPS:</label>
+            <input type="range" id="fps" min="1" max="60" value="30">
+            <span id="fpsValue">30 FPS</span>
+            
+            <label for="quality">Quality (1-10):</label>
+            <input type="range" id="quality" min="1" max="10" value="7">
+            <span id="qualityValue">7</span>
+
+            <label for="duration">Duration (seconds):</label>
+            <input type="range" id="duration" min="1" max="10" value="3">
+            <span id="durationValue">3s</span>
+            
+            <button id="generateGif">Generate GIF</button>
+            <button id="clearCanvas">Clear</button>
+        </div>
+        
+        <div class="settings-panel">
+            <div class="settings-group">
+                <h3>AI Image Generation</h3>
+                <div class="ai-generation-container">
+                    <div class="setting-item">
+                        <label for="imagePrompt">Image Description:</label>
+                        <textarea id="imagePrompt" placeholder="Describe the image you want to generate..."></textarea>
+                    </div>
+                    <div class="setting-item">
+                        <label for="aspectRatio">Aspect Ratio:</label>
+                        <select id="aspectRatio">
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="16:9">16:9</option>
+                            <option value="3:2">3:2</option>
+                            <option value="4:3">4:3</option>
+                        </select>
+                    </div>
+                    <div class="advanced-mode">
+                        <input type="checkbox" id="advancedMode">
+                        <label for="advancedMode">Advanced Mode (Let AI enhance your prompt)</label>
+                    </div>
+                    <button id="generateImage">Generate Image</button>
+                    <div id="generationStatus" class="generation-status"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Tooltip template -->
-    <div id="tooltip" class="tooltip" style="display:none;"></div>
-
-    <script src="app.js"></script>
+<script src="app.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
