@@ -769,6 +769,16 @@ function generateAnimationCSS(animation) {
             return `tornado ${speed}s ease-in-out infinite`;
         case 'orbit':
             return `orbit ${speed}s linear infinite`;
+        case 'diagonal-bounce':
+            return `diagonalBounce ${speed}s ease-in-out infinite`;
+        case 'pixelate':
+            return `pixelate ${speed}s ease-in-out infinite`;
+        case 'sway':
+            return `sway ${speed}s ease-in-out infinite`;
+        case 'ripple':
+            return `ripple ${speed}s ease-in-out infinite`;
+        case 'split-shift':
+            return `splitShift ${speed}s ease-in-out infinite`;
         default:
             return 'none';
     }
@@ -971,6 +981,63 @@ document.getElementById('generateGif').onclick = async function() {
                             Math.sin(orbitAngle) * orbitRadius
                         );
                         tempCtx.rotate(-orbitAngle);
+                        break;
+                    case 'diagonal-bounce':
+                        const diagProgress = progress * 4 % 4;
+                        let diagX = 0, diagY = 0, diagRotation = 0;
+                        
+                        if (diagProgress < 1) {
+                            diagX = -15 * intensityFactor * (1 - diagProgress);
+                            diagY = -15 * intensityFactor * (1 - diagProgress);
+                            diagRotation = -5 * (1 - diagProgress);
+                        } else if (diagProgress < 2) {
+                            diagX = 0;
+                            diagY = 0;
+                            diagRotation = 5 * (diagProgress - 1);
+                        } else if (diagProgress < 3) {
+                            diagX = 15 * intensityFactor * (diagProgress - 2);
+                            diagY = 15 * intensityFactor * (diagProgress - 2);
+                            diagRotation = -5 * (diagProgress - 2);
+                        } else {
+                            diagX = 15 * intensityFactor * (1 - (diagProgress - 3));
+                            diagY = 15 * intensityFactor * (1 - (diagProgress - 3));
+                            diagRotation = 5 * (1 - (diagProgress - 3));
+                        }
+                        
+                        tempCtx.translate(diagX, diagY);
+                        tempCtx.rotate(diagRotation * (Math.PI / 180));
+                        break;
+                    case 'pixelate':
+                        const pixelProgress = Math.sin(progress * Math.PI * 2);
+                        const pixelScale = 1 - Math.abs(pixelProgress) * 0.4 * intensityFactor;
+                        tempCtx.scale(pixelScale, pixelScale);
+                        // Note: image-rendering and filter can't be applied to canvas context directly
+                        break;
+                    case 'sway':
+                        const swayProgress = Math.sin(progress * Math.PI * 2);
+                        const swayAngle = swayProgress * 10 * intensityFactor * (Math.PI / 180);
+                        const swayX = swayProgress * 10 * intensityFactor;
+                        tempCtx.transform(1, 0, Math.tan(swayAngle), 1, swayX, 0);
+                        break;
+                    case 'ripple':
+                        const rippleProgress = Math.sin(progress * Math.PI * 2);
+                        const rippleScale = 1 + rippleProgress * 0.2 * intensityFactor;
+                        // Blur can't be applied directly to canvas context
+                        tempCtx.scale(rippleScale, rippleScale);
+                        break;
+                    case 'split-shift':
+                        // Split-shift effect can't be fully recreated in canvas context
+                        // We can approximate with small position shifts
+                        const splitShiftProgress = progress * 10 % 1;
+                        if (splitShiftProgress < 0.25) {
+                            tempCtx.translate(-5 * intensityFactor, 0);
+                        } else if (splitShiftProgress < 0.5) {
+                            tempCtx.translate(0, -5 * intensityFactor);
+                        } else if (splitShiftProgress < 0.75) {
+                            tempCtx.translate(5 * intensityFactor, 0);
+                        } else {
+                            tempCtx.translate(0, 5 * intensityFactor);
+                        }
                         break;
                 }
                 

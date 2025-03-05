@@ -219,6 +219,11 @@ label {
 .rainbow-preview::after { animation: rainbow 3s linear infinite; background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet); }
 .tornado-preview::after { animation: tornado 1.5s ease-in-out infinite; }
 .orbit-preview::after { animation: orbit 2s linear infinite; }
+.pixelate-preview::after { animation: pixelate 2s ease-in-out infinite; }
+.diagonal-bounce-preview::after { animation: diagonalBounce 2s ease-in-out infinite; }
+.sway-preview::after { animation: sway 2s ease-in-out infinite; }
+.ripple-preview::after { animation: ripple 2s ease-in-out infinite; }
+.split-shift-preview::after { animation: splitShift 2s ease-in-out infinite; }
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -360,6 +365,44 @@ label {
 @keyframes orbit {
     0% { transform: rotate(0deg) translateX(15px) rotate(0deg); }
     100% { transform: rotate(360deg) translateX(15px) rotate(-360deg); }
+}
+
+@keyframes diagonalBounce {
+    0% { transform: translate(-15px, -15px) rotate(-5deg); }
+    25% { transform: translate(0px, 0px) rotate(5deg); }
+    50% { transform: translate(15px, 15px) rotate(-5deg); }
+    75% { transform: translate(0px, 0px) rotate(5deg); }
+    100% { transform: translate(-15px, -15px) rotate(-5deg); }
+}
+
+@keyframes pixelate {
+    0%, 100% { transform: scale(1); image-rendering: auto; }
+    25%, 75% { transform: scale(0.8); image-rendering: pixelated; filter: contrast(1.4); }
+    50% { transform: scale(0.6); image-rendering: pixelated; filter: contrast(1.8); }
+}
+
+@keyframes sway {
+    0%, 100% { transform: skew(0deg, 0deg) translateX(0); }
+    25% { transform: skew(10deg, 5deg) translateX(-10px); }
+    75% { transform: skew(-10deg, -5deg) translateX(10px); }
+}
+
+@keyframes ripple {
+    0%, 100% { transform: scale(1); filter: blur(0px); }
+    50% { transform: scale(1.2); filter: blur(2px); }
+    75% { transform: scale(0.9); filter: blur(1px); }
+}
+
+@keyframes splitShift {
+    0%, 100% { clip-path: inset(0 0 0 0); }
+    25% { clip-path: inset(0 50% 0 0); transform: translateX(-5px); }
+    30% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    45% { clip-path: inset(50% 0 0 0); transform: translateY(-5px); }
+    50% { clip-path: inset(0 0 0 0); transform: translateY(0); }
+    65% { clip-path: inset(0 0 0 50%); transform: translateX(5px); }
+    70% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+    85% { clip-path: inset(0 0 50% 0); transform: translateY(5px); }
+    90% { clip-path: inset(0 0 0 0); transform: translateY(0); }
 }
 
 .ai-generation-container {
