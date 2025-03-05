@@ -747,6 +747,8 @@ function generateAnimationCSS(animation) {
             return `slide ${speed}s ease-in-out infinite`;
         case 'glitch':
             return `glitch ${speed}s ease-in-out infinite`;
+        case 'bounce-around':
+            return `bounceAround ${speed}s ease-in-out infinite`;
         default:
             return 'none';
     }
@@ -866,6 +868,27 @@ document.getElementById('generateGif').onclick = async function() {
                             const glitchY = (Math.random() - 0.5) * 8 * intensityFactor;
                             tempCtx.translate(glitchX, glitchY);
                         }
+                        break;
+                    case 'bounce-around':
+                        // Bounce around corners in a loop
+                        const cycle = (progress * 4) % 4;
+                        let xOffset = 0, yOffset = 0;
+                        
+                        if (cycle < 1) { // Top-left to top-right
+                            xOffset = cycle * 10 * intensityFactor;
+                            yOffset = -5 * intensityFactor;
+                        } else if (cycle < 2) { // Top-right to bottom-right
+                            xOffset = 10 * intensityFactor;
+                            yOffset = (cycle - 1) * 10 * intensityFactor - 5 * intensityFactor;
+                        } else if (cycle < 3) { // Bottom-right to bottom-left
+                            xOffset = (3 - cycle) * 10 * intensityFactor;
+                            yOffset = 5 * intensityFactor;
+                        } else { // Bottom-left to top-left
+                            xOffset = -10 * intensityFactor;
+                            yOffset = (4 - cycle) * 10 * intensityFactor - 5 * intensityFactor;
+                        }
+                        
+                        tempCtx.translate(xOffset, yOffset);
                         break;
                 }
                 

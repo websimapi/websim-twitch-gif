@@ -208,6 +208,7 @@ label {
 .squeeze-preview::after { animation: squeeze 1.5s ease-in-out infinite; }
 .slide-preview::after { animation: slide 1.5s ease-in-out infinite; }
 .glitch-preview::after { animation: glitch 1.5s ease-in-out infinite; }
+.bounce-around-preview::after { animation: bounceAround 2s ease-in-out infinite; }
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -281,6 +282,14 @@ label {
     40% { transform: translate(5px, -5px); }
     60% { transform: translate(-3px, -3px); }
     80% { transform: translate(3px, 3px); }
+}
+
+@keyframes bounceAround {
+    0% { transform: translate(-15px, -15px); }
+    25% { transform: translate(15px, -15px); }
+    50% { transform: translate(15px, 15px); }
+    75% { transform: translate(-15px, 15px); }
+    100% { transform: translate(-15px, -15px); }
 }
 
 .ai-generation-container {
