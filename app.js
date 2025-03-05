@@ -152,11 +152,6 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
     input.addEventListener('input', updateLivePreview);
 });
 
-document.getElementById('borderColor').addEventListener('input', function() {
-    document.getElementById('borderColorValue').textContent = this.value;
-    updateLivePreview();
-});
-
 document.getElementById('backgroundColor').addEventListener('input', function() {
     document.getElementById('backgroundColorValue').textContent = this.value;
     updateLivePreview();
