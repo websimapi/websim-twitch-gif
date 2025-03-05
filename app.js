@@ -1,14 +1,3 @@
-// ... existing code ...
-                    case 'matrix':
-                        const matrixY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
-                        tempCtx.translate(0, matrixY);
-                        break;
-                    case 'meteor':
-                        const meteorAngle = progress * Math.PI * 2;
-                        tempCtx.rotate(meteorAngle);
-                        break;
-// ... existing code ...
-
 let frames = [];
 const canvas = document.getElementById('preview');
 const ctx = canvas.getContext('2d');
@@ -849,7 +838,7 @@ function generateAnimationCSS(animationType) {
         case 'matrix':
             return `matrix ${duration}s ease-in-out infinite`;
         case 'meteor':
-            return `meteor ${duration}s ease-in-out infinite`;
+            return `meteor ${duration}s linear infinite`;
         case 'pendulum-wave':
             return `pendulumWave ${duration}s ease-in-out infinite`;
         case 'tumbleweed':
@@ -1633,81 +1622,22 @@ document.getElementById('generateGif').onclick = async function() {
                         break;
                     case 'matrix':
                         const matrixProgress = (progress * 4) % 1;
-                        const matrixY = matrixProgress * 30 * intensityFactor;
-                        const matrixOpacity = 1 - matrixProgress * 0.6;
-                        tempCtx.translate(0, matrixY);
+                        const matrixY = Math.floor(matrixProgress * 4) * 10 * intensityFactor;
+                        const matrixOpacity = 1 - (matrixProgress * 0.8);
                         tempCtx.globalAlpha = (settings.opacity / 100) * matrixOpacity;
+                        tempCtx.translate(0, matrixY);
                         break;
                     case 'meteor':
-                        const meteorProgress = progress * 2 % 1;
-                        const meteorX = (meteorProgress - 0.5) * 40 * intensityFactor;
-                        const meteorY = (meteorProgress - 0.5) * 40 * intensityFactor;
-                        const meteorScale = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
-                        const meteorOpacity = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
-                        tempCtx.translate(meteorX, meteorY);
-                        tempCtx.rotate(Math.PI/4);
-                        tempCtx.scale(meteorScale, meteorScale);
+                        const meteorProgress = progress % 1;
+                        const meteorX = (meteorProgress * 2 - 1) * 20 * intensityFactor;
+                        const meteorY = (meteorProgress * 2 - 1) * 20 * intensityFactor;
+                        const meteorScale = 0.5 + meteorProgress * 0.5;
+                        const meteorOpacity = meteorProgress < 0.2 ? meteorProgress * 5 : 
+                                             meteorProgress > 0.8 ? (1 - meteorProgress) * 5 : 1;
                         tempCtx.globalAlpha = (settings.opacity / 100) * meteorOpacity;
-                        break;
-                    case 'pendulum-wave':
-                        const pendulumWaveY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
-                        const pendulumWaveRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
-                        tempCtx.translate(0, pendulumWaveY);
-                        tempCtx.rotate(pendulumWaveRotation);
-                        break;
-                    case 'tumbleweed':
-                        const tumbleweedAngle = progress * Math.PI * 2;
-                        const tumbleweedScale = 1 + Math.sin(progress * Math.PI * 2) * 0.2 * intensityFactor;
-                        tempCtx.rotate(tumbleweedAngle);
-                        tempCtx.scale(tumbleweedScale, tumbleweedScale);
-                        break;
-                    case 'diagonal-shake':
-                        const diagShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
-                        tempCtx.translate(diagShakeOffset, diagShakeOffset);
-                        break;
-                    case 'diagonal-jitter':
-                        const jitterOffset = (progress * 3) % 3;
-                        let jitterX = 0, jitterY = 0;
-                        if (jitterOffset < 1) {
-                            jitterX = jitterY = 0;
-                        } else if (jitterOffset < 2) {
-                            jitterX = 3 * intensityFactor;
-                            jitterY = -3 * intensityFactor;
-                        } else {
-                            jitterX = -3 * intensityFactor;
-                            jitterY = 3 * intensityFactor;
-                        }
-                        tempCtx.translate(jitterX, jitterY);
-                        break;
-                    case 'diagonal-pulse-shake':
-                        const dpShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
-                        const dpScale = 1 + Math.sin(progress * Math.PI * 2) * 0.05 * intensityFactor;
-                        tempCtx.translate(dpShakeOffset, dpShakeOffset);
-                        tempCtx.scale(dpScale, dpScale);
-                        break;
-                    case 'diagonal-zigzag':
-                        const zigzagPhase = (progress * 5) % 5;
-                        let zigzagX = 0, zigzagY = 0;
-                        if (zigzagPhase < 1) {
-                            zigzagX = zigzagY = 0;
-                        } else if (zigzagPhase < 2) {
-                            zigzagX = zigzagY = -3 * intensityFactor;
-                        } else if (zigzagPhase < 3) {
-                            zigzagX = 3 * intensityFactor;
-                            zigzagY = -3 * intensityFactor;
-                        } else if (zigzagPhase < 4) {
-                            zigzagX = -3 * intensityFactor;
-                            zigzagY = 3 * intensityFactor;
-                        } else {
-                            zigzagX = zigzagY = 3 * intensityFactor;
-                        }
-                        tempCtx.translate(zigzagX, zigzagY);
-                        break;
-                    case 'diagonal-wave-shake':
-                        const waveShakeOffset = Math.sin(progress * Math.PI * 4) * 4 * intensityFactor;
-                        const waveShakeRotation = Math.sin(progress * Math.PI * 2) * 2 * intensityFactor * (Math.PI / 180);
-                        tempCtx.translate(waveShakeOffset, waveShakeOffset);
-                        tempCtx.rotate(waveShakeRotation);
+                        tempCtx.translate(meteorX, meteorY);
+                        tempCtx.rotate(progress * Math.PI * 2);
+                        tempCtx.scale(meteorScale, meteorScale);
                         break;
                 }
                 
@@ -1921,4 +1851,4 @@ document.getElementById('generateImage').addEventListener('click', async () => {
         console.error('Error generating image:', error);
         statusElement.textContent = `Error: ${error.message || 'Failed to generate image'}`;
     }
-};
+});
