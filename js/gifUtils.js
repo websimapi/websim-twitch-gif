@@ -164,3 +164,25 @@ async function generateGif() {
     gif.render();
 }
 
+async function fetchGifWorker() {
+    try {
+        const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+        if (!response.ok) {
+            throw new Error('Failed to fetch GIF worker');
+        }
+        return await response.blob();
+    } catch (error) {
+        console.error('Error fetching GIF worker:', error);
+        throw error;
+    }
+}
+
+function getImageSettings() {
+    return {
+        backgroundColor: document.getElementById('backgroundColorValue').textContent,
+        opacity: parseInt(document.getElementById('opacity').value),
+        scale: parseInt(document.getElementById('scale').value)
+    };
+}
+
+export { generateGif, fetchGifWorker };
