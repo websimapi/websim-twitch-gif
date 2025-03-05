@@ -1190,7 +1190,7 @@ textarea#imagePrompt {
     75% { transform: translate(4px, 4px) rotate(2deg); }
 }
 
-/* Add preview classes for the diagonal animations */
+/* Add preview classes for the new animations */
 .diagonal-shake-preview::after { animation: diagonal-shake 1.5s ease-in-out infinite; }
 .diagonal-jitter-preview::after { animation: diagonal-jitter 1.3s ease-in-out infinite; }
 .diagonal-pulse-shake-preview::after { animation: diagonal-pulse-shake 1.5s ease-in-out infinite; }

@@ -685,7 +685,6 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
 });
 
 function generateAnimationCSS(animationType) {
-    // Base animation properties
     const duration = (1 / animationSpeed).toFixed(1);
     const intensity = animationIntensity / 5;
     
@@ -707,7 +706,7 @@ function generateAnimationCSS(animationType) {
         case 'zoom':
             return `zoom ${duration}s ease-in-out infinite`;
         case 'spin':
-            return `spin ${duration}s linear infinite`;
+            return `spin ${duration}s ease-in-out infinite`;
         case 'wiggle':
             return `wiggle ${duration}s ease-in-out infinite`;
         case 'squeeze':
@@ -884,6 +883,16 @@ function generateAnimationCSS(animationType) {
             return `microFloat ${duration}s ease-in-out infinite`;
         case 'subtle-throb':
             return `subtleThrob ${duration}s ease-in-out infinite`;
+        case 'diagonal-shake':
+            return `diagonal-shake ${duration}s ease-in-out infinite`;
+        case 'diagonal-jitter':
+            return `diagonal-jitter ${duration}s ease-in-out infinite`;
+        case 'diagonal-pulse-shake':
+            return `diagonal-pulse-shake ${duration}s ease-in-out infinite`;
+        case 'diagonal-zigzag':
+            return `diagonal-zigzag ${duration}s ease-in-out infinite`;
+        case 'diagonal-wave-shake':
+            return `diagonal-wave-shake ${duration}s ease-in-out infinite`;
         default:
             return '';
     }
