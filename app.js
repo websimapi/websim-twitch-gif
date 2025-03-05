@@ -939,6 +939,7 @@ document.getElementById('generateGif').onclick = async function() {
                         }
                         
                         tempCtx.translate(xOffset, yOffset);
+                        tempCtx.rotate(-cycle * Math.PI / 2);
                         break;
                     case 'float':
                         const floatY = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
@@ -983,7 +984,10 @@ document.getElementById('generateGif').onclick = async function() {
                         }
                         break;
                     case 'rainbow':
-                        // Rainbow effect is done via CSS, nothing to add here
+                        // Rainbow effect is done via HSL color manipulation
+                        const rainbowProgress = progress * 2 % 1;
+                        const hue = rainbowProgress * 360; // 0-360 degrees for full hue rotation
+                        tempCtx.filter = `hue-rotate(${hue}deg) saturate(1.5)`;
                         break;
                     case 'tornado':
                         const tornadoAngle = progress * Math.PI * 2;
@@ -1165,6 +1169,9 @@ document.getElementById('generateGif').onclick = async function() {
             }
             
             tempCtx.globalAlpha = settings.opacity / 100;
+            
+            // Reset any filters before drawing the image
+            tempCtx.filter = "none";
             
             tempCtx.drawImage(
                 frame,
