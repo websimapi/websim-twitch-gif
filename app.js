@@ -687,11 +687,113 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
     input.addEventListener('input', updateLivePreview);
 });
 
+function generateAnimationCSS(animationType) {
+    // Base animation properties
+    const duration = (1 / animationSpeed).toFixed(1);
+    const intensity = animationIntensity / 5;
+    
+    switch(animationType) {
+        case 'rotate':
+            return `rotate ${duration}s linear infinite`;
+        case 'bounce':
+            return `bounce ${duration}s ease-in-out infinite`;
+        case 'fade':
+            return `fade ${duration}s ease-in-out infinite`;
+        case 'shake':
+            return `shake ${duration}s ease-in-out infinite`;
+        case 'pulse':
+            return `pulse ${duration}s ease-in-out infinite`;
+        case 'flip':
+            return `flip ${duration}s ease-in-out infinite`;
+        case 'swing':
+            return `swing ${duration}s ease-in-out infinite`;
+        case 'zoom':
+            return `zoom ${duration}s ease-in-out infinite`;
+        case 'spin':
+            return `spin ${duration}s ease-in-out infinite`;
+        case 'wiggle':
+            return `wiggle ${duration}s ease-in-out infinite`;
+        case 'squeeze':
+            return `squeeze ${duration}s ease-in-out infinite`;
+        case 'slide':
+            return `slide ${duration}s ease-in-out infinite`;
+        case 'glitch':
+            return `glitch ${duration}s ease-in-out infinite`;
+        case 'bounce-around':
+            return `bounceAround ${duration}s ease-in-out infinite`;
+        case 'float':
+            return `float ${duration}s ease-in-out infinite`;
+        case 'spiral':
+            return `spiral ${duration}s linear infinite`;
+        case 'throb':
+            return `throb ${duration}s ease-in-out infinite`;
+        case 'heartbeat':
+            return `heartbeat ${duration}s ease-in-out infinite`;
+        case 'jello':
+            return `jello ${duration}s ease-in-out infinite`;
+        case 'pendulum':
+            return `pendulum ${duration}s ease-in-out infinite`;
+        case 'blink':
+            return `blink ${duration}s step-end infinite`;
+        case 'rainbow':
+            return `rainbow ${duration}s linear infinite`;
+        case 'tornado':
+            return `tornado ${duration}s ease-in-out infinite`;
+        case 'orbit':
+            return `orbit ${duration}s linear infinite`;
+        case 'diagonal-bounce':
+            return `diagonalBounce ${duration}s ease-in-out infinite`;
+        case 'pixelate':
+            return `pixelate ${duration}s ease-in-out infinite`;
+        case 'sway':
+            return `sway ${duration}s ease-in-out infinite`;
+        case 'ripple':
+            return `ripple ${duration}s ease-in-out infinite`;
+        case 'split-shift':
+            return `splitShift ${duration}s ease-in-out infinite`;
+        case 'confetti':
+            return `confetti ${duration}s linear infinite`;
+        case 'wave':
+            return `wave ${duration}s ease-in-out infinite`;
+        case 'jump-rope':
+            return `jumpRope ${duration}s ease-in-out infinite`;
+        case 'typewriter':
+            return `typewriter ${duration}s steps(8, end) infinite`;
+        case 'bounce-flip':
+            return `bounceFlip ${duration}s ease-in-out infinite`;
+        case 'dizzy':
+            return `dizzy ${duration}s ease-in-out infinite`;
+        case 'dance':
+            return `dance ${duration}s ease-in-out infinite`;
+        case 'elastic':
+            return `elastic ${duration}s cubic-bezier(.68,-0.55,.27,1.55) infinite`;
+        case 'shadow-play':
+            return `shadowPlay ${duration}s ease-in-out infinite`;
+        case 'bounce-rotate':
+            return `bounceRotate ${duration}s ease-in-out infinite`;
+        case 'party-mode':
+            return `partyMode ${duration}s ease-in-out infinite`;
+        case 'rolling':
+            return `rolling ${duration}s ease-in-out infinite`;
+        case 'kaleidoscope':
+            return `kaleidoscope ${duration}s linear infinite`;
+        case 'wobble':
+            return `wobble ${duration}s ease-in-out infinite`;
+        case 'teleport':
+            return `teleport ${duration}s ease-in-out infinite`;
+        case 'pinwheel':
+            return `pinwheel ${duration}s linear infinite`;
+        case 'rainbow-effect':
+            return `rainbow ${duration}s linear infinite`;
+        default:
+            return '';
+    }
+}
+
 function updateLivePreview() {
     const previewCanvas = document.getElementById('previewAnimation');
     const ctx = previewCanvas.getContext('2d');
     ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-
     if (frames.length === 0) return;
 
     const settings = getImageSettings();
