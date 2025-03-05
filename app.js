@@ -1,3 +1,35 @@
+// ... existing code ...
+                    case 'matrix':
+                        const matrixY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        tempCtx.translate(0, matrixY);
+                        break;
+                    case 'meteor':
+                        const meteorAngle = progress * Math.PI * 2;
+                        tempCtx.rotate(meteorAngle);
+                        break;
+// ... existing code ...
+
+// needs to be updated to
+                    case 'matrix':
+                        const matrixProgress = (progress * 4) % 1;
+                        const matrixY = matrixProgress * 30 * intensityFactor;
+                        const matrixOpacity = 1 - matrixProgress * 0.6;
+                        tempCtx.translate(0, matrixY);
+                        tempCtx.globalAlpha = (settings.opacity / 100) * matrixOpacity;
+                        break;
+                    case 'meteor':
+                        const meteorProgress = progress * 2 % 1;
+                        const meteorX = (meteorProgress - 0.5) * 40 * intensityFactor;
+                        const meteorY = (meteorProgress - 0.5) * 40 * intensityFactor;
+                        const meteorScale = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
+                        const meteorOpacity = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
+                        tempCtx.translate(meteorX, meteorY);
+                        tempCtx.rotate(Math.PI/4);
+                        tempCtx.scale(meteorScale, meteorScale);
+                        tempCtx.globalAlpha = (settings.opacity / 100) * meteorOpacity;
+                        break;
+
+// becomes:
 let frames = [];
 const canvas = document.getElementById('preview');
 const ctx = canvas.getContext('2d');
@@ -706,7 +738,7 @@ function generateAnimationCSS(animationType) {
         case 'zoom':
             return `zoom ${duration}s ease-in-out infinite`;
         case 'spin':
-            return `spin ${duration}s ease-in-out infinite`;
+            return `spin ${duration}s linear infinite`;
         case 'wiggle':
             return `wiggle ${duration}s ease-in-out infinite`;
         case 'squeeze':
@@ -836,9 +868,9 @@ function generateAnimationCSS(animationType) {
         case 'flip-coin':
             return `flipCoin ${duration}s linear infinite`;
         case 'matrix':
-            return `matrix ${duration}s step-end infinite`;
+            return `matrix ${duration}s ease-in-out infinite`;
         case 'meteor':
-            return `meteor ${duration}s linear infinite`;
+            return `meteor ${duration}s ease-in-out infinite`;
         case 'pendulum-wave':
             return `pendulumWave ${duration}s ease-in-out infinite`;
         case 'tumbleweed':
@@ -1621,12 +1653,22 @@ document.getElementById('generateGif').onclick = async function() {
                         tempCtx.scale(flipCoinScaleX, 1);
                         break;
                     case 'matrix':
-                        const matrixY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        const matrixProgress = (progress * 4) % 1;
+                        const matrixY = matrixProgress * 30 * intensityFactor;
+                        const matrixOpacity = 1 - matrixProgress * 0.6;
                         tempCtx.translate(0, matrixY);
+                        tempCtx.globalAlpha = (settings.opacity / 100) * matrixOpacity;
                         break;
                     case 'meteor':
-                        const meteorAngle = progress * Math.PI * 2;
-                        tempCtx.rotate(meteorAngle);
+                        const meteorProgress = progress * 2 % 1;
+                        const meteorX = (meteorProgress - 0.5) * 40 * intensityFactor;
+                        const meteorY = (meteorProgress - 0.5) * 40 * intensityFactor;
+                        const meteorScale = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
+                        const meteorOpacity = 1 - Math.abs(meteorProgress - 0.5) * 0.5;
+                        tempCtx.translate(meteorX, meteorY);
+                        tempCtx.rotate(Math.PI/4);
+                        tempCtx.scale(meteorScale, meteorScale);
+                        tempCtx.globalAlpha = (settings.opacity / 100) * meteorOpacity;
                         break;
                     case 'pendulum-wave':
                         const pendulumWaveY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
@@ -1900,4 +1942,4 @@ document.getElementById('generateImage').addEventListener('click', async () => {
         console.error('Error generating image:', error);
         statusElement.textContent = `Error: ${error.message || 'Failed to generate image'}`;
     }
-});
+};
