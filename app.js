@@ -792,6 +792,18 @@ function generateAnimationCSS(animationType) {
             return `spinZoom ${duration}s ease-in-out infinite`;
         case 'bounce-wave':
             return `bounceWave ${duration}s ease-in-out infinite`;
+        case 'hyperspeed':
+            return `hyperspeed ${duration}s linear infinite`;
+        case 'color-pulse':
+            return `colorPulse ${duration}s linear infinite`;
+        case 'pixel-shuffle':
+            return `pixelShuffle ${duration}s linear infinite`;
+        case 'glitch-out':
+            return `glitchOut ${duration}s ease-in-out infinite`;
+        case 'liquid':
+            return `liquid ${duration}s ease-in-out infinite`;
+        case 'warp-drive':
+            return `warpDrive ${duration}s linear infinite`;
         default:
             return '';
     }
@@ -828,7 +840,7 @@ function updateLivePreview() {
     ctx.save();
 
     ctx.globalAlpha = settings.opacity / 100;
-
+    
     // Draw the image without applying transformations yet
     ctx.drawImage(
         currentFrame,
@@ -1373,6 +1385,47 @@ document.getElementById('generateGif').onclick = async function() {
                         tempCtx.translate(0, bwY);
                         tempCtx.transform(1, 0, Math.tan(bwSkewX), 1, 0, 0);
                         tempCtx.scale(1, bwScaleY);
+                        break;
+                    case 'hyperspeed':
+                        // Very fast vibrations with slight rotations
+                        const hsScale = 1 + Math.sin(progress * Math.PI * 8) * 0.1 * intensityFactor;
+                        const hsRotate = Math.sin(progress * Math.PI * 20) * 2 * intensityFactor * (Math.PI / 180);
+                        const hsShiftX = Math.sin(progress * Math.PI * 20) * 2 * intensityFactor;
+                        const hsShiftY = Math.cos(progress * Math.PI * 20) * 2 * intensityFactor;
+                        tempCtx.translate(hsShiftX, hsShiftY);
+                        tempCtx.rotate(hsRotate);
+                        tempCtx.scale(hsScale, hsScale);
+                        break;
+                    case 'color-pulse':
+                        // Apply color pulse (note: this would be handled through a filter in CSS)
+                        let hue = (progress * 360) % 360;
+                        tempCtx.filter = `hue-rotate(${hue}deg)`;
+                        break;
+                    case 'pixel-shuffle':
+                        const psX = Math.sin(progress * Math.PI * 10) * 3 * intensityFactor;
+                        const psY = Math.cos(progress * Math.PI * 10) * 3 * intensityFactor;
+                        tempCtx.translate(psX, psY);
+                        break;
+                    case 'glitch-out':
+                        if (Math.random() > 0.7) {
+                            const goX = (Math.random() - 0.5) * 10 * intensityFactor;
+                            tempCtx.translate(goX, 0);
+                            // Would apply clip-path and hue-rotate in CSS
+                        }
+                        break;
+                    case 'liquid':
+                        // Simulate liquid effect by scaling parts differently
+                        const lqScaleX = 1 + Math.sin(progress * Math.PI * 2) * 0.15 * intensityFactor;
+                        const lqScaleY = 1 + Math.cos(progress * Math.PI * 2) * 0.15 * intensityFactor;
+                        tempCtx.scale(lqScaleX, lqScaleY);
+                        // Would apply border-radius in CSS
+                        break;
+                    case 'warp-drive':
+                        const wdScale = 1 - Math.abs(Math.sin(progress * Math.PI)) * 0.5 * intensityFactor;
+                        const wdRotation = progress * Math.PI * 2;
+                        tempCtx.rotate(wdRotation);
+                        tempCtx.scale(wdScale, wdScale);
+                        // Would apply filter effects in CSS
                         break;
                 }
                 
