@@ -326,3 +326,90 @@ textarea#imagePrompt {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+.editing-mode {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    border: 2px solid #9147ff;
+    background: #0e0e10;
+    overflow: hidden;
+}
+
+.editing-mode canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.editor-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.tool-option {
+    background: #2d2d32;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tool-option:hover {
+    background: #3d3d42;
+}
+
+.tool-option.selected {
+    border-color: #9147ff;
+}
+
+.tool-icon {
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 5px;
+    fill: #efeff1;
+}
+
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.color-option {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.color-option.selected {
+    border-color: white;
+}
+
+.brush-size {
+    margin: 10px 0;
+}
+
+.editor-controls {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.selection-controls {
+    display: none;
+    margin: 10px 0;
+}
+
+.selection-controls.active {
+    display: flex;
+    gap: 10px;
+}
