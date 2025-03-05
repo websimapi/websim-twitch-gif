@@ -17,7 +17,7 @@ let isSelecting = false;
 let selectedArea = null;
 let brushSize = 5;
 let brushColor = '#ffffff';
-let undoStack = [];
+let undoStack = []; 
 let redoStack = [];
 
 function initializeApp() {

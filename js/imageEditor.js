@@ -6,6 +6,10 @@ import { updateLivePreview } from './animationUtils.js';
 function startImageEditor(image) {
     window.isEditing = true;
     
+    // Ensure undoStack and redoStack are initialized
+    if (!window.undoStack) window.undoStack = [];
+    if (!window.redoStack) window.redoStack = [];
+    
     // Show editor panel, hide other content
     document.getElementById('imageEditorPanel').style.display = 'block';
     
@@ -547,11 +551,21 @@ function addText(canvas, x, y) {
 }
 
 function saveToUndoStack(canvas) {
+    // Initialize undoStack if it doesn't exist
+    if (!window.undoStack) {
+        window.undoStack = [];
+    }
+    
     // Save current state to undo stack
     const imageData = canvas.toDataURL();
     window.undoStack.push(imageData);
+    
     // Clear redo stack after a new action
-    window.redoStack = [];
+    if (!window.redoStack) {
+        window.redoStack = [];
+    } else {
+        window.redoStack = [];
+    }
 }
 
 function restoreCanvasState(canvas, imageData) {
