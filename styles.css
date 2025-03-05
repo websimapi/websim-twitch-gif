@@ -168,31 +168,10 @@ label {
     border-color: #9147ff;
 }
 
-.animation-option[data-animation="rainbow"] {
-    position: relative;
-    border: 2px solid transparent;
-}
-
-.animation-option[data-animation="rainbow"].selected {
-    border-color: #9147ff;
-    background-color: rgba(145, 71, 255, 0.2);
-}
-
-.animation-option[data-animation="rainbow"]::before {
-    content: "OFF";
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 8px;
-    background: rgba(0,0,0,0.5);
-    padding: 2px 4px;
-    border-radius: 3px;
-    transition: all 0.3s;
-}
-
-.animation-option[data-animation="rainbow"].selected::before {
-    content: "ON";
-    background: rgba(145, 71, 255, 0.7);
+.animation-option[data-animation="rainbow-effect"] {
+    background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff);
+    color: white;
+    text-shadow: 1px 1px 2px black;
 }
 
 .animation-preview {

@@ -22,29 +22,22 @@ let redoStack = [];
 // Animation option selection
 document.querySelectorAll('.animation-option').forEach(option => {
     option.addEventListener('click', () => {
-        // Special handling for rainbow effect
-        if (option.dataset.animation === "rainbow") {
+        // Skip if it's the rainbow effect option
+        if (option.dataset.animation === 'rainbow-effect') {
             rainbowEffect = !rainbowEffect;
-            if (rainbowEffect) {
-                option.classList.add('selected');
-            } else {
-                option.classList.remove('selected');
-            }
+            option.classList.toggle('selected');
             updateLivePreview();
             return;
         }
         
-        // Regular animation selection
         document.querySelectorAll('.animation-option').forEach(opt => {
-            if (opt.dataset.animation !== "rainbow") {
+            if (opt.dataset.animation !== 'rainbow-effect') {
                 opt.classList.remove('selected');
             }
         });
-        if (option.dataset.animation !== "rainbow") {
-            option.classList.add('selected');
-            selectedAnimation = option.dataset.animation;
-            updateLivePreview();
-        }
+        option.classList.add('selected');
+        selectedAnimation = option.dataset.animation;
+        updateLivePreview();
     });
 });
 
@@ -683,6 +676,12 @@ document.getElementById('backgroundColor').addEventListener('input', function() 
 
 document.querySelectorAll('.image-settings input, .image-settings select').forEach(input => {
     input.addEventListener('input', updateLivePreview);
+});
+
+// Add rainbow effect checkbox handler
+document.getElementById('rainbowEffect').addEventListener('change', function() {
+    rainbowEffect = this.checked;
+    updateLivePreview();
 });
 
 function updateLivePreview() {
@@ -1426,7 +1425,11 @@ document.getElementById('clearCanvas').addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     document.getElementById('fileInput').value = '';
     selectedAnimation = 'none';
-    document.querySelectorAll('.animation-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelectorAll('.animation-option').forEach(opt => {
+        if (opt.dataset.animation !== 'rainbow-effect') {
+            opt.classList.remove('selected');
+        }
+    });
     document.querySelector('[data-animation="none"]').classList.add('selected');
     
     const previewCanvas = document.getElementById('previewAnimation');
