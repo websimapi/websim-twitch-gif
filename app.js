@@ -844,6 +844,46 @@ function generateAnimationCSS(animationType) {
             return `pendulumWave ${duration}s ease-in-out infinite`;
         case 'tumbleweed':
             return `tumbleweed ${duration}s linear infinite`;
+        case 'gentle-shake':
+            return `gentleShake ${duration}s ease-in-out infinite`;
+        case 'tiny-jump':
+            return `tinyJump ${duration}s ease-in-out infinite`;
+        case 'subtle-pulse':
+            return `subtlePulse ${duration}s ease-in-out infinite`;
+        case 'soft-wobble':
+            return `softWobble ${duration}s ease-in-out infinite`;
+        case 'micro-spin':
+            return `microSpin ${duration}s linear infinite`;
+        case 'mini-orbit':
+            return `miniOrbit ${duration}s linear infinite`;
+        case 'light-flicker':
+            return `lightFlicker ${duration}s step-end infinite`;
+        case 'smooth-slide':
+            return `smoothSlide ${duration}s ease-in-out infinite`;
+        case 'tiny-twist':
+            return `tinyTwist ${duration}s ease-in-out infinite`;
+        case 'quick-pulse':
+            return `quickPulse ${duration}s ease-in-out infinite`;
+        case 'mini-rotate':
+            return `miniRotate ${duration}s linear infinite`;
+        case 'soft-breathe':
+            return `softBreathe ${duration}s ease-in-out infinite`;
+        case 'nano-bounce':
+            return `nanoBounce ${duration}s ease-in-out infinite`;
+        case 'subtle-wave':
+            return `subtleWave ${duration}s ease-in-out infinite`;
+        case 'gentle-rock':
+            return `gentleRock ${duration}s ease-in-out infinite`;
+        case 'tiny-bounce':
+            return `tinyBounce ${duration}s ease-in-out infinite`;
+        case 'micro-waggle':
+            return `microWaggle ${duration}s ease-in-out infinite`;
+        case 'soft-vibrate':
+            return `softVibrate ${duration}s linear infinite`;
+        case 'micro-float':
+            return `microFloat ${duration}s ease-in-out infinite`;
+        case 'subtle-throb':
+            return `subtleThrob ${duration}s ease-in-out infinite`;
         default:
             return '';
     }
@@ -872,13 +912,13 @@ function updateLivePreview() {
     const scaledHeight = previewCanvas.height * scale;
     const x = (previewCanvas.width - scaledWidth) / 2;
     const y = (previewCanvas.height - scaledHeight) / 2;
-
+    
     const effectiveWidth = scaledWidth;
     const effectiveHeight = scaledHeight;
-
+    
     const currentFrame = frames[0];
     ctx.save();
-
+    
     ctx.globalAlpha = settings.opacity / 100;
     
     // Draw the image without applying transformations yet

@@ -861,6 +861,144 @@ textarea#imagePrompt {
 }
 
 /* New animation keyframes */
+@keyframes gentleShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+@keyframes tinyJump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+@keyframes subtlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes softWobble {
+    0%, 100% { transform: skewX(0deg); }
+    25% { transform: skewX(2deg); }
+    75% { transform: skewX(-2deg); }
+}
+
+@keyframes microSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(10deg); }
+}
+
+@keyframes miniOrbit {
+    0% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(4px) translateY(-4px); }
+    50% { transform: translateX(0) translateY(-6px); }
+    75% { transform: translateX(-4px) translateY(-4px); }
+    100% { transform: translateX(0) translateY(0); }
+}
+
+@keyframes lightFlicker {
+    0%, 100% { opacity: 1; }
+    90%, 95% { opacity: 0.7; }
+}
+
+@keyframes smoothSlide {
+    0% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    100% { transform: translateX(-3px); }
+}
+
+@keyframes tinyTwist {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(5deg); }
+}
+
+@keyframes quickPulse {
+    0%, 50%, 100% { transform: scale(1); }
+    25%, 75% { transform: scale(1.03); }
+}
+
+@keyframes miniRotate {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(5deg); }
+}
+
+@keyframes softBreathe {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.03); opacity: 0.9; }
+}
+
+@keyframes nanoBounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-2px); }
+    60% { transform: translateY(-1px); }
+}
+
+@keyframes subtleWave {
+    0%, 100% { transform: skewX(0) translateX(0); }
+    25% { transform: skewX(1deg) translateX(2px); }
+    75% { transform: skewX(-1deg) translateX(-2px); }
+}
+
+@keyframes gentleRock {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+}
+
+@keyframes tinyBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-3px); }
+    60% { transform: translateY(-2px); }
+}
+
+@keyframes microWaggle {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
+}
+
+@keyframes softVibrate {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-1px, 1px); }
+    40% { transform: translate(1px, -1px); }
+    60% { transform: translate(-1px, -1px); }
+    80% { transform: translate(1px, 1px); }
+}
+
+@keyframes microFloat {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-2px); }
+    75% { transform: translateY(2px); }
+}
+
+@keyframes subtleThrob {
+    0%, 100% { transform: scale(1); }
+    30% { transform: scale(1.02); }
+    60% { transform: scale(0.98); }
+}
+
+/* Add preview classes for the new animations */
+.gentle-shake-preview::after { animation: gentleShake 1.5s ease-in-out infinite; }
+.tiny-jump-preview::after { animation: tinyJump 1.5s ease-in-out infinite; }
+.subtle-pulse-preview::after { animation: subtlePulse 1.5s ease-in-out infinite; }
+.soft-wobble-preview::after { animation: softWobble 1.5s ease-in-out infinite; }
+.micro-spin-preview::after { animation: microSpin 1.5s linear infinite; }
+.mini-orbit-preview::after { animation: miniOrbit 2s ease-in-out infinite; }
+.light-flicker-preview::after { animation: lightFlicker 2s step-end infinite; }
+.smooth-slide-preview::after { animation: smoothSlide 2s ease-in-out infinite; }
+.tiny-twist-preview::after { animation: tinyTwist 1.5s ease-in-out infinite; }
+.quick-pulse-preview::after { animation: quickPulse 1s ease-in-out infinite; }
+.mini-rotate-preview::after { animation: miniRotate 2s linear infinite; }
+.soft-breathe-preview::after { animation: softBreathe 2s ease-in-out infinite; }
+.nano-bounce-preview::after { animation: nanoBounce 1.5s ease-in-out infinite; }
+.subtle-wave-preview::after { animation: subtleWave 2s ease-in-out infinite; }
+.gentle-rock-preview::after { animation: gentleRock 2s ease-in-out infinite; }
+.tiny-bounce-preview::after { animation: tinyBounce 1.5s ease-in-out infinite; }
+.micro-waggle-preview::after { animation: microWaggle 1.5s ease-in-out infinite; }
+.soft-vibrate-preview::after { animation: softVibrate 1s linear infinite; }
+.micro-float-preview::after { animation: microFloat 2s ease-in-out infinite; }
+.subtle-throb-preview::after { animation: subtleThrob 1.5s ease-in-out infinite; }
+
 @keyframes microBounce {
     0%, 100% { transform: translateY(0); }
     25% { transform: translateY(-5px); }
