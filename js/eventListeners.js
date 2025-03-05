@@ -50,12 +50,12 @@ function setupEventListeners() {
     const editImageBtn = document.getElementById('editImage');
     if (editImageBtn) {
         editImageBtn.addEventListener('click', () => {
-            if (frames.length === 0) {
+            if (window.frames.length === 0) {
                 alert('Please upload an image first!');
                 return;
             }
             
-            startImageEditor(frames[0]);
+            startImageEditor(window.frames[0]);
         });
     }
     
