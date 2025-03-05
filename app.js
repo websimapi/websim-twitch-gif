@@ -211,6 +211,31 @@ function toggleFavorite(animationName) {
     populateAnimationOptions();
 }
 
+// Define updateLivePreview globally so it can be called from anywhere
+function updateLivePreview() {
+    const previewCanvas = document.getElementById('preview');
+    const animationCanvas = document.getElementById('previewAnimation');
+    const ctx = animationCanvas.getContext('2d');
+    
+    // Clear animation canvas
+    ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
+    
+    // Copy the original image
+    ctx.drawImage(previewCanvas, 0, 0);
+    
+    // Apply the selected animation class
+    const livePreview = document.getElementById('livePreview');
+    
+    // Remove all existing animation classes
+    const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
+    livePreview.classList.remove(...animationClasses);
+    
+    // Add the selected animation class
+    if (selectedAnimation && selectedAnimation !== 'none') {
+        livePreview.classList.add(`${selectedAnimation}-preview`);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Call populateAnimationOptions to populate animation list
     populateAnimationOptions();
@@ -294,31 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = loadEvent.target.result;
         };
         reader.readAsDataURL(file);
-    }
-    
-    // Update live preview function
-    function updateLivePreview() {
-        const previewCanvas = document.getElementById('preview');
-        const animationCanvas = document.getElementById('previewAnimation');
-        const ctx = animationCanvas.getContext('2d');
-        
-        // Clear animation canvas
-        ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
-        
-        // Copy the original image
-        ctx.drawImage(previewCanvas, 0, 0);
-        
-        // Apply the selected animation class
-        const livePreview = document.getElementById('livePreview');
-        
-        // Remove all existing animation classes
-        const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
-        livePreview.classList.remove(...animationClasses);
-        
-        // Add the selected animation class
-        if (selectedAnimation && selectedAnimation !== 'none') {
-            livePreview.classList.add(`${selectedAnimation}-preview`);
-        }
     }
     
     // Initial preview update
