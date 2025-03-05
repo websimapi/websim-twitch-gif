@@ -5,6 +5,7 @@ let gifWorkerBlob;
 let selectedAnimation = 'none';
 let animationIntensity = 5;
 let animationSpeed = 1;
+let rainbowEffect = false;
 
 // Image editor variables
 let isEditing = false;
@@ -665,6 +666,12 @@ document.querySelectorAll('.image-settings input, .image-settings select').forEa
     input.addEventListener('input', updateLivePreview);
 });
 
+// Add rainbow effect checkbox handler
+document.getElementById('rainbowEffect').addEventListener('change', function() {
+    rainbowEffect = this.checked;
+    updateLivePreview();
+});
+
 function updateLivePreview() {
     const previewCanvas = document.getElementById('previewAnimation');
     const ctx = previewCanvas.getContext('2d');
@@ -677,6 +684,7 @@ function updateLivePreview() {
     // Reset any previous animations
     previewCanvas.style.animation = 'none';
     previewCanvas.style.transform = 'none';
+    previewCanvas.style.filter = 'none';
     
     if (settings.backgroundColor) {
         ctx.fillStyle = settings.backgroundColor;
@@ -713,6 +721,12 @@ function updateLivePreview() {
         const animationCSS = generateAnimationCSS(selectedAnimation);
         previewCanvas.style.animation = animationCSS;
         previewCanvas.style.transformOrigin = 'center center';
+        
+        // Apply rainbow effect if enabled (separate from animation)
+        if (rainbowEffect) {
+            previewCanvas.style.filter = 'hue-rotate(0deg)';
+            previewCanvas.style.animation = `${previewCanvas.style.animation}, rainbow ${(1 / animationSpeed).toFixed(1)}s linear infinite`;
+        }
     }
 }
 
@@ -799,6 +813,18 @@ function generateAnimationCSS(animation) {
             return `shadowPlay ${speed}s ease-in-out infinite`;
         case 'bounce-rotate':
             return `bounceRotate ${speed}s ease-in-out infinite`;
+        case 'party-mode':
+            return `partyMode ${speed}s ease-in-out infinite`;
+        case 'rolling':
+            return `rolling ${speed}s ease-in-out infinite`;
+        case 'kaleidoscope':
+            return `kaleidoscope ${speed}s linear infinite`;
+        case 'wobble':
+            return `wobble ${speed}s ease-in-out infinite`;
+        case 'teleport':
+            return `teleport ${speed}s ease-in-out infinite`;
+        case 'pinwheel':
+            return `pinwheel ${speed}s linear infinite`;
         default:
             return 'none';
     }
@@ -939,6 +965,7 @@ document.getElementById('generateGif').onclick = async function() {
                         }
                         
                         tempCtx.translate(xOffset, yOffset);
+                        tempCtx.rotate(-cycle * Math.PI / 2);
                         break;
                     case 'float':
                         const floatY = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
@@ -1160,6 +1187,99 @@ document.getElementById('generateGif').onclick = async function() {
                         tempCtx.translate(0, brY);
                         tempCtx.rotate(brRotation);
                         break;
+                    case 'party-mode':
+                        const partyPhase = (progress * 5) % 5;
+                        if (partyPhase < 1) {
+                            tempCtx.scale(1 + 0.1 * intensityFactor, 1 + 0.1 * intensityFactor);
+                            tempCtx.rotate(10 * intensityFactor * (Math.PI / 180));
+                        } else if (partyPhase < 2) {
+                            tempCtx.scale(0.9 * intensityFactor, 0.9 * intensityFactor);
+                            tempCtx.translate(5 * intensityFactor, -5 * intensityFactor);
+                            tempCtx.rotate(-5 * intensityFactor * (Math.PI / 180));
+                        } else if (partyPhase < 3) {
+                            tempCtx.scale(1.2 * intensityFactor, 1.2 * intensityFactor);
+                            tempCtx.translate(-5 * intensityFactor, 5 * intensityFactor);
+                            tempCtx.rotate(15 * intensityFactor * (Math.PI / 180));
+                        } else if (partyPhase < 4) {
+                            tempCtx.scale(0.8 * intensityFactor, 0.8 * intensityFactor);
+                            tempCtx.rotate(-15 * intensityFactor * (Math.PI / 180));
+                        } else {
+                            tempCtx.scale(1, 1);
+                            tempCtx.rotate(0);
+                        }
+                        break;
+                    case 'rolling':
+                        const rollX = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor;
+                        const rollRotation = progress * Math.PI * 4; // 720 degrees
+                        tempCtx.translate(rollX, 0);
+                        tempCtx.rotate(rollRotation);
+                        break;
+                    case 'kaleidoscope':
+                        const kPhase = (progress * 3) % 3;
+                        let kScale = 1, kRotation = progress * Math.PI * 2;
+                        if (kPhase < 1) {
+                            kScale = 1;
+                        } else if (kPhase < 2) {
+                            kScale = 0.8;
+                            kRotation = progress * Math.PI * 2 + (Math.PI * 2/3);
+                        } else {
+                            kScale = 1.2;
+                            kRotation = progress * Math.PI * 2 + (Math.PI * 4/3);
+                        }
+                        tempCtx.rotate(kRotation);
+                        tempCtx.scale(kScale, kScale);
+                        // Note: clip-path would be applied here if canvas supported it
+                        break;
+                    case 'wobble':
+                        const wPhase = (progress * 4) % 4;
+                        if (wPhase < 1) {
+                            tempCtx.transform(1, 0, 0, 1, 0, 0);
+                        } else if (wPhase < 2) {
+                            tempCtx.transform(1, Math.tan(5 * intensityFactor * (Math.PI / 180)), 
+                                             Math.tan(15 * intensityFactor * (Math.PI / 180)), 1, 0, 0);
+                            tempCtx.scale(0.9, 1.1);
+                        } else if (wPhase < 3) {
+                            tempCtx.transform(1, Math.tan(-3 * intensityFactor * (Math.PI / 180)), 
+                                             Math.tan(-10 * intensityFactor * (Math.PI / 180)), 1, 0, 0);
+                            tempCtx.scale(1.1, 0.9);
+                        } else {
+                            tempCtx.transform(1, Math.tan(1 * intensityFactor * (Math.PI / 180)), 
+                                             Math.tan(5 * intensityFactor * (Math.PI / 180)), 1, 0, 0);
+                            tempCtx.scale(0.95, 1.05);
+                        }
+                        break;
+                    case 'teleport':
+                        const tPhase = (progress * 20) % 100;
+                        if (tPhase < 15 || tPhase >= 85) {
+                            // Visible
+                            tempCtx.scale(1, 1);
+                            tempCtx.globalAlpha = (settings.opacity / 100);
+                        } else if (tPhase < 30) {
+                            // Shrinking
+                            const shrinkFactor = 1 - ((tPhase - 15) / 15);
+                            tempCtx.scale(shrinkFactor, shrinkFactor);
+                            tempCtx.globalAlpha = (settings.opacity / 100) * 0.5;
+                        } else if (tPhase < 50) {
+                            // Hidden, moved right
+                            tempCtx.scale(0.1, 0.1);
+                            tempCtx.translate(30 * intensityFactor, 0);
+                            tempCtx.globalAlpha = 0;
+                        } else if (tPhase < 70) {
+                            // Hidden, moved left
+                            tempCtx.scale(0.1, 0.1);
+                            tempCtx.translate(-30 * intensityFactor, 0);
+                            tempCtx.globalAlpha = (settings.opacity / 100) * 0.5;
+                        } else {
+                            // Growing
+                            const growFactor = (tPhase - 70) / 15;
+                            tempCtx.scale(growFactor, growFactor);
+                            tempCtx.globalAlpha = (settings.opacity / 100) * 0.8;
+                        }
+                        break;
+                    case 'pinwheel':
+                        tempCtx.rotate(progress * Math.PI * 2);
+                        // Note: clip-path would be handled in CSS, can't apply to canvas context directly
+                        break;
                 }
                 
                 tempCtx.translate(-centerX, -centerY);
@@ -1167,13 +1287,102 @@ document.getElementById('generateGif').onclick = async function() {
             
             tempCtx.globalAlpha = settings.opacity / 100;
             
-            tempCtx.drawImage(
-                frame,
-                x,
-                y,
-                effectiveWidth,
-                effectiveHeight
-            );
+            // Apply rainbow effect to image data if enabled
+            if (rainbowEffect) {
+                const frameImage = new Image();
+                frameImage.src = frame.src || createImageBitmap(frame).then(bmp => {
+                    const tempCanvas2 = document.createElement('canvas');
+                    tempCanvas2.width = bmp.width;
+                    tempCanvas2.height = bmp.height;
+                    const tempCtx2 = tempCanvas2.getContext('2d');
+                    tempCtx2.drawImage(bmp, 0, 0);
+                    return tempCanvas2.toDataURL();
+                });
+                
+                const hueRotation = (progress * 360) % 360;
+                
+                // Create a temporary canvas to apply the hue-rotate
+                const effectCanvas = document.createElement('canvas');
+                effectCanvas.width = effectiveWidth;
+                effectCanvas.height = effectiveHeight;
+                const effectCtx = effectCanvas.getContext('2d');
+                
+                // Draw the frame
+                effectCtx.drawImage(frame, 0, 0, effectiveWidth, effectiveHeight);
+                
+                // Get image data
+                const imageData = effectCtx.getImageData(0, 0, effectiveWidth, effectiveHeight);
+                const data = imageData.data;
+                
+                // Apply hue rotation manually to each pixel
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] > 0) { // Only process non-transparent pixels
+                        // Convert RGB to HSL
+                        const r = data[i] / 255;
+                        const g = data[i + 1] / 255;
+                        const b = data[i + 2] / 255;
+                        
+                        const max = Math.max(r, g, b);
+                        const min = Math.min(r, g, b);
+                        let h, s, l = (max + min) / 2;
+                        
+                        if (max === min) {
+                            h = s = 0; // achromatic
+                        } else {
+                            const d = max - min;
+                            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                            
+                            switch (max) {
+                                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                                case g: h = (b - r) / d + 2; break;
+                                case b: h = (r - g) / d + 4; break;
+                            }
+                            
+                            h /= 6;
+                        }
+                        
+                        // Rotate hue
+                        h = (h + hueRotation / 360) % 1;
+                        
+                        // Convert back to RGB
+                        let r1, g1, b1;
+                        
+                        if (s === 0) {
+                            r1 = g1 = b1 = l; // achromatic
+                        } else {
+                            const hue2rgb = (p, q, t) => {
+                                if (t < 0) t += 1;
+                                if (t > 1) t -= 1;
+                                if (t < 1/6) return p + (q - p) * 6 * t;
+                                if (t < 1/2) return q;
+                                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                                return p;
+                            };
+                            
+                            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                            const p = 2 * l - q;
+                            
+                            r1 = hue2rgb(p, q, h + 1/3);
+                            g1 = hue2rgb(p, q, h);
+                            b1 = hue2rgb(p, q, h - 1/3);
+                        }
+                        
+                        // Put back into data array
+                        data[i] = Math.round(r1 * 255);
+                        data[i + 1] = Math.round(g1 * 255);
+                        data[i + 2] = Math.round(b1 * 255);
+                    }
+                }
+                
+                // Put the modified image data back
+                effectCtx.putImageData(imageData, 0, 0);
+                
+                // Draw to main canvas
+                tempCtx.drawImage(effectCanvas, x, y, effectiveWidth, effectiveHeight);
+            } else {
+                // Normal drawing without rainbow effect
+                tempCtx.drawImage(frame, x, y, effectiveWidth, effectiveHeight);
+            }
             
             tempCtx.restore();
             

@@ -234,6 +234,12 @@ label {
 .elastic-preview::after { animation: elastic 1.5s cubic-bezier(.68,-0.55,.27,1.55) infinite; }
 .shadow-play-preview::after { animation: shadowPlay 2s ease-in-out infinite; }
 .bounce-rotate-preview::after { animation: bounceRotate 2s ease-in-out infinite; }
+.party-mode-preview::after { animation: partyMode 1.5s ease-in-out infinite; }
+.rolling-preview::after { animation: rolling 2s ease-in-out infinite; }
+.kaleidoscope-preview::after { animation: kaleidoscope 2s linear infinite; }
+.wobble-preview::after { animation: wobble 1.5s ease-in-out infinite; }
+.teleport-preview::after { animation: teleport 2s ease-in-out infinite; }
+.pinwheel-preview::after { animation: pinwheel 1.5s linear infinite; }
 
 /* Base animation keyframes */
 @keyframes rotate {
@@ -483,6 +489,46 @@ label {
     25% { transform: translateY(-15px) rotate(90deg); }
     50% { transform: translateY(5px) rotate(180deg); }
     75% { transform: translateY(-10px) rotate(270deg); }
+}
+
+@keyframes partyMode {
+    0%, 100% { transform: scale(1) rotate(0deg); background: red; }
+    20% { transform: scale(1.1) rotate(10deg); background: orange; }
+    40% { transform: scale(0.9) translate(5px, -5px) rotate(-5deg); background: yellow; }
+    60% { transform: scale(1.2) translate(-5px, 5px) rotate(15deg); background: green; }
+    80% { transform: scale(0.8) rotate(-15deg); background: blue; }
+}
+
+@keyframes rolling {
+    0% { transform: translateX(-15px) rotate(0deg); }
+    50% { transform: translateX(15px) rotate(360deg); }
+    100% { transform: translateX(-15px) rotate(720deg); }
+}
+
+@keyframes kaleidoscope {
+    0% { transform: rotate(0deg) scale(1); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+    33% { transform: rotate(120deg) scale(0.8); clip-path: polygon(50% 0%, 80% 10%, 100% 35%, 100% 70%, 80% 90%, 50% 100%, 20% 90%, 0% 70%, 0% 35%, 20% 10%); }
+    66% { transform: rotate(240deg) scale(1.2); clip-path: polygon(50% 0%, 90% 20%, 100% 60%, 75% 100%, 25% 100%, 0% 60%, 10% 20%); }
+    100% { transform: rotate(360deg) scale(1); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+}
+
+@keyframes wobble {
+    0%, 100% { transform: skewX(0deg) skewY(0deg) scale(1, 1); }
+    25% { transform: skewX(15deg) skewY(5deg) scale(0.9, 1.1); }
+    50% { transform: skewX(-10deg) skewY(-3deg) scale(1.1, 0.9); }
+    75% { transform: skewX(5deg) skewY(1deg) scale(0.95, 1.05); }
+}
+
+@keyframes teleport {
+    0%, 15%, 85%, 100% { transform: scale(1); opacity: 1; }
+    30% { transform: scale(0.1); opacity: 0.5; }
+    50% { transform: scale(0.1) translateX(30px); opacity: 0; }
+    70% { transform: scale(0.1) translateX(-30px); opacity: 0.5; }
+}
+
+@keyframes pinwheel {
+    from { transform: rotate(0deg) scale(1); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+    to { transform: rotate(360deg) scale(1); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 }
 
 .ai-generation-container {
