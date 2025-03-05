@@ -22,10 +22,29 @@ let redoStack = [];
 // Animation option selection
 document.querySelectorAll('.animation-option').forEach(option => {
     option.addEventListener('click', () => {
-        document.querySelectorAll('.animation-option').forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        selectedAnimation = option.dataset.animation;
-        updateLivePreview();
+        // Special handling for rainbow effect
+        if (option.dataset.animation === "rainbow") {
+            rainbowEffect = !rainbowEffect;
+            if (rainbowEffect) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+            updateLivePreview();
+            return;
+        }
+        
+        // Regular animation selection
+        document.querySelectorAll('.animation-option').forEach(opt => {
+            if (opt.dataset.animation !== "rainbow") {
+                opt.classList.remove('selected');
+            }
+        });
+        if (option.dataset.animation !== "rainbow") {
+            option.classList.add('selected');
+            selectedAnimation = option.dataset.animation;
+            updateLivePreview();
+        }
     });
 });
 
@@ -664,12 +683,6 @@ document.getElementById('backgroundColor').addEventListener('input', function() 
 
 document.querySelectorAll('.image-settings input, .image-settings select').forEach(input => {
     input.addEventListener('input', updateLivePreview);
-});
-
-// Add rainbow effect checkbox handler
-document.getElementById('rainbowEffect').addEventListener('change', function() {
-    rainbowEffect = this.checked;
-    updateLivePreview();
 });
 
 function updateLivePreview() {
