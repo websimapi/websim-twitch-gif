@@ -211,31 +211,6 @@ function toggleFavorite(animationName) {
     populateAnimationOptions();
 }
 
-// Define updateLivePreview globally so it can be called from anywhere
-function updateLivePreview() {
-    const previewCanvas = document.getElementById('preview');
-    const animationCanvas = document.getElementById('previewAnimation');
-    const ctx = animationCanvas.getContext('2d');
-    
-    // Clear animation canvas
-    ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
-    
-    // Copy the original image
-    ctx.drawImage(previewCanvas, 0, 0);
-    
-    // Apply the selected animation class
-    const livePreview = document.getElementById('livePreview');
-    
-    // Remove all existing animation classes
-    const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
-    livePreview.classList.remove(...animationClasses);
-    
-    // Add the selected animation class
-    if (selectedAnimation && selectedAnimation !== 'none') {
-        livePreview.classList.add(`${selectedAnimation}-preview`);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     // Call populateAnimationOptions to populate animation list
     populateAnimationOptions();
@@ -321,13 +296,29 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     }
     
-    // Initial preview update
-    updateLivePreview();
-    
-    // Select the default animation
-    const defaultAnimOption = document.querySelector(`.animation-option[data-animation="${selectedAnimation}"]`);
-    if (defaultAnimOption) {
-        defaultAnimOption.classList.add('selected');
+    // Update live preview function
+    function updateLivePreview() {
+        const previewCanvas = document.getElementById('preview');
+        const animationCanvas = document.getElementById('previewAnimation');
+        const ctx = animationCanvas.getContext('2d');
+        
+        // Clear animation canvas
+        ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
+        
+        // Copy the original image
+        ctx.drawImage(previewCanvas, 0, 0);
+        
+        // Apply the selected animation class
+        const livePreview = document.getElementById('livePreview');
+        
+        // Remove all existing animation classes
+        const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
+        livePreview.classList.remove(...animationClasses);
+        
+        // Add the selected animation class
+        if (selectedAnimation && selectedAnimation !== 'none') {
+            livePreview.classList.add(`${selectedAnimation}-preview`);
+        }
     }
     
     // Show values for range inputs
@@ -382,4 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }, {once: true});
         }
     });
+    
+    // Select the first animation by default once everything is loaded
+    setTimeout(() => {
+        const firstAnimation = document.querySelector('.animation-option');
+        if (firstAnimation) {
+            firstAnimation.click();
+        }
+    }, 500);
 });
