@@ -203,27 +203,15 @@ document.getElementById('generateGif').onclick = async function() {
             const x = (tempCanvas.width - scaledWidth) / 2;
             const y = (tempCanvas.height - scaledHeight) / 2;
             
-            const effectiveWidth = scaledWidth - (settings.padding * 2) - (settings.margin * 2);
-            const effectiveHeight = scaledHeight - (settings.padding * 2) - (settings.margin * 2);
+            const effectiveWidth = scaledWidth;
+            const effectiveHeight = scaledHeight;
             
             tempCtx.save();
             
-            if (settings.borderRadius > 0) {
-                tempCtx.beginPath();
-                tempCtx.roundRect(
-                    x + settings.margin,
-                    y + settings.margin,
-                    effectiveWidth + (settings.padding * 2),
-                    effectiveHeight + (settings.padding * 2),
-                    settings.borderRadius
-                );
-                tempCtx.clip();
-            }
-            
             // Apply animation transforms to the context
             if (selectedAnimation !== 'none') {
-                const centerX = x + settings.margin + settings.padding + (effectiveWidth / 2);
-                const centerY = y + settings.margin + settings.padding + (effectiveHeight / 2);
+                const centerX = x + (effectiveWidth / 2);
+                const centerY = y + (effectiveHeight / 2);
                 
                 tempCtx.translate(centerX, centerY);
                 
@@ -265,27 +253,11 @@ document.getElementById('generateGif').onclick = async function() {
             
             tempCtx.drawImage(
                 frame,
-                x + settings.margin + settings.padding,
-                y + settings.margin + settings.padding,
+                x,
+                y,
                 effectiveWidth,
                 effectiveHeight
             );
-            
-            if (settings.borderWidth > 0) {
-                tempCtx.strokeStyle = settings.borderColor;
-                tempCtx.lineWidth = settings.borderWidth;
-                if (settings.borderStyle === 'dashed') {
-                    tempCtx.setLineDash([5, 5]);
-                } else if (settings.borderStyle === 'dotted') {
-                    tempCtx.setLineDash([2, 2]);
-                }
-                tempCtx.strokeRect(
-                    x + settings.margin,
-                    y + settings.margin,
-                    effectiveWidth + (settings.padding * 2),
-                    effectiveHeight + (settings.padding * 2)
-                );
-            }
             
             tempCtx.restore();
             
