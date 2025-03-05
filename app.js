@@ -883,6 +883,8 @@ document.getElementById('generateGif').onclick = async function() {
             const effectiveHeight = scaledHeight;
 
             tempCtx.save();
+
+            tempCtx.globalAlpha = settings.opacity / 100;
             
             // Apply animation transforms to the context
             if (selectedAnimation !== 'none') {
