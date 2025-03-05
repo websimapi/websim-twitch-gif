@@ -784,6 +784,14 @@ function generateAnimationCSS(animationType) {
             return `rainbow ${duration}s linear infinite`;
         case 'bounce-orbit':
             return `bounceOrbit ${duration}s ease-in-out infinite`;
+        case 'vvcool':
+            return `vvcool ${duration}s linear infinite`;
+        case 'neon-flash':
+            return `neonFlash ${duration}s linear infinite`;
+        case 'spin-zoom':
+            return `spinZoom ${duration}s ease-in-out infinite`;
+        case 'bounce-wave':
+            return `bounceWave ${duration}s ease-in-out infinite`;
         default:
             return '';
     }
@@ -1331,6 +1339,40 @@ document.getElementById('generateGif').onclick = async function() {
                             orbitY = 15 * intensityFactor - (progress - 0.75) * 4 * 30 * intensityFactor;
                         }
                         tempCtx.translate(orbitX, orbitY);
+                        break;
+                    case 'vvcool':
+                        // Vibrating pulse effect similar to Discord's VVCool
+                        const vvScale = 1 + Math.sin(progress * Math.PI * 8) * 0.1 * intensityFactor;
+                        const vvRotate = Math.sin(progress * Math.PI * 20) * 2 * intensityFactor * (Math.PI / 180);
+                        const vvShiftX = Math.sin(progress * Math.PI * 20) * 2 * intensityFactor;
+                        const vvShiftY = Math.cos(progress * Math.PI * 20) * 2 * intensityFactor;
+                        tempCtx.translate(vvShiftX, vvShiftY);
+                        tempCtx.rotate(vvRotate);
+                        tempCtx.scale(vvScale, vvScale);
+                        break;
+                    case 'neon-flash':
+                        // Neon flashing effect
+                        const neonOpacity = 0.7 + Math.sin(progress * Math.PI * 10) * 0.3 * intensityFactor;
+                        const neonScale = 1 + Math.sin(progress * Math.PI * 8) * 0.05 * intensityFactor;
+                        tempCtx.globalAlpha = (settings.opacity / 100) * neonOpacity;
+                        tempCtx.scale(neonScale, neonScale);
+                        // Would add glow effect via shadow in CSS, simulated here with scale
+                        break;
+                    case 'spin-zoom':
+                        // Spinning zoom in/out
+                        const szAngle = progress * Math.PI * 4;
+                        const szScale = 0.8 + Math.abs(Math.sin(progress * Math.PI * 2)) * 0.4 * intensityFactor;
+                        tempCtx.rotate(szAngle);
+                        tempCtx.scale(szScale, szScale);
+                        break;
+                    case 'bounce-wave':
+                        // Bouncing with wave distortion
+                        const bwY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        const bwSkewX = Math.sin(progress * Math.PI * 4) * 8 * intensityFactor * (Math.PI / 180);
+                        const bwScaleY = 1 + Math.sin(progress * Math.PI * 2) * 0.15 * intensityFactor;
+                        tempCtx.translate(0, bwY);
+                        tempCtx.transform(1, 0, Math.tan(bwSkewX), 1, 0, 0);
+                        tempCtx.scale(1, bwScaleY);
                         break;
                 }
                 
