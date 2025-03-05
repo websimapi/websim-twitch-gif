@@ -28,9 +28,6 @@ document.querySelectorAll('.effect-option').forEach(option => {
         if (effect === 'rainbow') {
             rainbowEffect = !rainbowEffect;
             option.classList.toggle('selected');
-        } else if (effect === '3d-depth') {
-            depthEffect = !depthEffect;
-            option.classList.toggle('selected');
         }
         
         updateLivePreview();
@@ -853,66 +850,13 @@ function updateLivePreview() {
         filters.push('hue-rotate(0deg)');
     }
     
-    // Apply 3D depth effect if enabled
-    if (depthEffect) {
-        previewCanvas.style.transformStyle = 'preserve-3d';
-        previewCanvas.style.perspective = '300px';
-        if (previewCanvas.style.animation) {
-            previewCanvas.style.animation = `${previewCanvas.style.animation}, 3d-depth ${(1 / animationSpeed).toFixed(1)}s ease-in-out infinite`;
-        } else {
-            previewCanvas.style.animation = `3d-depth ${(1 / animationSpeed).toFixed(1)}s ease-in-out infinite`;
-        }
-        
-        // Add depth filter effects
-        filters.push('drop-shadow(0 10px 25px rgba(0,0,0,0.7))');
-    }
-    
-    // Apply combined filters
+    // Apply filters
     if (filters.length > 0) {
         previewCanvas.style.filter = filters.join(' ');
     }
 }
 
 function apply3DDepthToFrame(ctx, canvas, frameNum, totalFrames, settings) {
-    const progress = frameNum / totalFrames;
-    const cycle = progress * 4 % 4;
-    let depthZ = 0;
-    let rotateY = 0;
-    
-    if (cycle < 1) {
-        depthZ = cycle * 40;
-        rotateY = cycle * 15;
-    } else if (cycle < 2) {
-        depthZ = 40 - (cycle - 1) * 40;
-        rotateY = 15 - (cycle - 1) * 30;
-    } else if (cycle < 3) {
-        depthZ = (cycle - 2) * 40;
-        rotateY = -15 * (cycle - 2);
-    } else {
-        depthZ = 40 - (cycle - 3) * 40;
-        rotateY = -15 + (cycle - 3) * 15;
-    }
-    
-    // Apply depth effect
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    
-    // Scale based on depth (further = smaller)
-    const depthScale = 1 - (depthZ / 100);
-    
-    // Apply perspective transformation
-    ctx.translate(centerX, centerY);
-    ctx.transform(
-        depthScale, 0, rotateY * 0.015,
-        depthScale, 0, 0
-    );
-    ctx.translate(-centerX, -centerY);
-    
-    // Add stronger shadow for depth perception
-    ctx.shadowColor = 'rgba(0,0,0,0.7)';
-    ctx.shadowBlur = depthZ;
-    ctx.shadowOffsetX = rotateY;
-    ctx.shadowOffsetY = depthZ / 2;
 }
 
 document.getElementById('generateGif').onclick = async function() {
@@ -963,11 +907,6 @@ document.getElementById('generateGif').onclick = async function() {
             const effectiveHeight = scaledHeight;
             
             tempCtx.save();
-            
-            // Apply 3D depth effect if enabled
-            if (depthEffect) {
-                apply3DDepthToFrame(tempCtx, tempCanvas, frameNum, totalFrames, settings);
-            }
             
             // Apply animation transforms to the context
             if (selectedAnimation !== 'none') {
@@ -1088,7 +1027,7 @@ document.getElementById('generateGif').onclick = async function() {
                         const jelloProgress = progress * 4 % 1;
                         const skewX = Math.sin(jelloProgress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
                         const skewY = Math.sin(jelloProgress * Math.PI * 2) * 5 * intensityFactor * (Math.PI / 180);
-                        tempCtx.transform(1, 0, Math.tan(skewY), 1, 0, 0);
+                        tempCtx.transform(1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0);
                         break;
                     case 'pendulum':
                         const pendulumAngle = Math.sin(progress * Math.PI * 2) * 20 * intensityFactor * (Math.PI / 180);
