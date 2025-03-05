@@ -779,6 +779,26 @@ function generateAnimationCSS(animation) {
             return `ripple ${speed}s ease-in-out infinite`;
         case 'split-shift':
             return `splitShift ${speed}s ease-in-out infinite`;
+        case 'confetti':
+            return `confetti ${speed}s linear infinite`;
+        case 'wave':
+            return `wave ${speed}s ease-in-out infinite`;
+        case 'jump-rope':
+            return `jumpRope ${speed}s ease-in-out infinite`;
+        case 'typewriter':
+            return `typewriter ${speed}s steps(8, end) infinite`;
+        case 'bounce-flip':
+            return `bounceFlip ${speed}s ease-in-out infinite`;
+        case 'dizzy':
+            return `dizzy ${speed}s ease-in-out infinite`;
+        case 'dance':
+            return `dance ${speed}s ease-in-out infinite`;
+        case 'elastic':
+            return `elastic ${speed}s cubic-bezier(.68,-0.55,.27,1.55) infinite`;
+        case 'shadow-play':
+            return `shadowPlay ${speed}s ease-in-out infinite`;
+        case 'bounce-rotate':
+            return `bounceRotate ${speed}s ease-in-out infinite`;
         default:
             return 'none';
     }
@@ -1038,6 +1058,106 @@ document.getElementById('generateGif').onclick = async function() {
                         } else {
                             tempCtx.translate(0, 5 * intensityFactor);
                         }
+                        break;
+                    case 'confetti':
+                        const confettiAngle = progress * Math.PI * 2;
+                        const confettiScale = 0.8 + Math.sin(progress * Math.PI * 4) * 0.2 * intensityFactor;
+                        tempCtx.rotate(confettiAngle);
+                        tempCtx.scale(confettiScale, confettiScale);
+                        // Color changes handled in CSS
+                        break;
+                    case 'wave':
+                        const waveY = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                        const waveSkew = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
+                        tempCtx.transform(1, 0, Math.tan(waveSkew), 1, 0, waveY);
+                        break;
+                    case 'jump-rope':
+                        const jumpY = Math.abs(Math.sin(progress * Math.PI * 2)) * -15 * intensityFactor;
+                        const jumpScale = 1 - Math.abs(Math.sin(progress * Math.PI * 2)) * 0.3 * intensityFactor;
+                        const jumpRotation = Math.sin(progress * Math.PI * 2) * 15 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(0, jumpY);
+                        tempCtx.scale(1, jumpScale);
+                        tempCtx.rotate(jumpRotation);
+                        break;
+                    case 'typewriter':
+                        // Typewriter effect - implemented through clipping
+                        const typeProgress = progress * 4 % 1;
+                        const clipWidth = tempCanvas.width * (1 - typeProgress);
+                        tempCtx.beginPath();
+                        tempCtx.rect(0, 0, clipWidth, tempCanvas.height);
+                        tempCtx.clip();
+                        break;
+                    case 'bounce-flip':
+                        const bfProgress = progress * 4 % 4;
+                        let bfY = 0, bfRotationY = 0;
+                        
+                        if (bfProgress < 1) {
+                            bfY = -10 * intensityFactor * Math.sin(bfProgress * Math.PI);
+                            bfRotationY = bfProgress * 90;
+                        } else if (bfProgress < 2) {
+                            bfRotationY = 90 + (bfProgress - 1) * 90;
+                        } else if (bfProgress < 3) {
+                            bfY = -10 * intensityFactor * Math.sin((bfProgress - 2) * Math.PI);
+                            bfRotationY = 180 + (bfProgress - 2) * 90;
+                        } else {
+                            bfRotationY = 270 + (bfProgress - 3) * 90;
+                        }
+                        
+                        tempCtx.translate(0, bfY);
+                        // Simulate 3D rotation by scaling
+                        const scaleX = Math.abs(Math.cos(bfRotationY * Math.PI / 180));
+                        tempCtx.scale(scaleX, 1);
+                        break;
+                    case 'dizzy':
+                        const dizzyAngle = progress * Math.PI * 2;
+                        const dizzyScale = 0.8 + Math.sin(progress * Math.PI * 3) * 0.2 * intensityFactor;
+                        const dizzyX = Math.sin(progress * Math.PI * 3) * 10 * intensityFactor;
+                        tempCtx.rotate(dizzyAngle);
+                        tempCtx.scale(dizzyScale, dizzyScale);
+                        tempCtx.translate(dizzyX, 0);
+                        break;
+                    case 'dance':
+                        const danceRotation = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor * (Math.PI / 180);
+                        const danceY = Math.sin(progress * Math.PI * 2) * -10 * intensityFactor;
+                        const danceSkewX = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor * (Math.PI / 180);
+                        tempCtx.rotate(danceRotation);
+                        tempCtx.transform(1, 0, Math.tan(danceSkewX), 1, 0, danceY);
+                        break;
+                    case 'elastic':
+                        const elasticProgress = progress * 4 % 1;
+                        let elasticScaleX = 1, elasticScaleY = 1;
+                        
+                        if (elasticProgress < 0.25) {
+                            elasticScaleX = 1 + elasticProgress * 2 * intensityFactor;
+                            elasticScaleY = 1 - elasticProgress * 2 * intensityFactor;
+                        } else if (elasticProgress < 0.5) {
+                            const t = (elasticProgress - 0.25) * 4;
+                            elasticScaleX = 1.5 * intensityFactor - t * intensityFactor;
+                            elasticScaleY = 0.5 + t * intensityFactor;
+                        } else if (elasticProgress < 0.75) {
+                            const t = (elasticProgress - 0.5) * 4;
+                            elasticScaleX = 1 - t * intensityFactor;
+                            elasticScaleY = 1 + t * intensityFactor;
+                        } else {
+                            const t = (elasticProgress - 0.75) * 4;
+                            elasticScaleX = 0.8 + t * 0.2 * intensityFactor;
+                            elasticScaleY = 1.2 - t * 0.2 * intensityFactor;
+                        }
+                        
+                        tempCtx.scale(elasticScaleX, elasticScaleY);
+                        break;
+                    case 'shadow-play':
+                        const shadowX = Math.sin(progress * Math.PI * 2) * 10 * intensityFactor;
+                        const shadowRotation = Math.sin(progress * Math.PI * 2) * 5 * intensityFactor * (Math.PI / 180);
+                        tempCtx.translate(shadowX, 0);
+                        tempCtx.rotate(shadowRotation);
+                        // Shadow effect can't be applied directly in canvas context
+                        break;
+                    case 'bounce-rotate':
+                        const brY = Math.sin(progress * Math.PI * 2) * -15 * intensityFactor;
+                        const brRotation = progress * Math.PI * 2;
+                        tempCtx.translate(0, brY);
+                        tempCtx.rotate(brRotation);
                         break;
                 }
                 
