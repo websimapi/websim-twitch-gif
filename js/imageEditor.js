@@ -21,7 +21,7 @@ function startImageEditor(image) {
     editorCtx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     
-    // Draw the image centered on canvas
+    // Draw the image centered on canvas with proper scaling
     const scale = Math.min(
         editorCanvas.width / image.width,
         editorCanvas.height / image.height
@@ -32,8 +32,8 @@ function startImageEditor(image) {
     
     editorCtx.drawImage(
         image,
-        x, y,
-        image.width * scale, image.height * scale
+        0, 0, image.width, image.height,
+        x, y, image.width * scale, image.height * scale
     );
     
     // Save initial state for undo functionality
