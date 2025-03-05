@@ -770,7 +770,8 @@ document.getElementById('generateGif').onclick = async function() {
         quality,
         width: 112,
         height: 112,
-        workerScript: URL.createObjectURL(gifWorkerBlob)
+        workerScript: URL.createObjectURL(gifWorkerBlob),
+        transparent: settings.backgroundColor ? null : 0x00000000
     });
 
     const tempCanvas = document.createElement('canvas');
