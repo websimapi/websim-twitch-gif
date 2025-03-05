@@ -233,9 +233,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set up drag and drop for file upload
     const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    
     dropZone.addEventListener('click', () => {
-        document.getElementById('fileInput').click();
+        fileInput.click();
     });
+    
+    fileInput.addEventListener('change', handleFileUpload);
     
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -251,32 +255,71 @@ document.addEventListener('DOMContentLoaded', () => {
         dropZone.classList.remove('dragover');
         
         if (e.dataTransfer.files.length) {
-            document.getElementById('fileInput').files = e.dataTransfer.files;
-            const event = new Event('change');
-            document.getElementById('fileInput').dispatchEvent(event);
+            handleFileUpload({ target: { files: e.dataTransfer.files } });
         }
     });
     
-    // Set up tooltips
-    document.addEventListener('mouseover', (e) => {
-        if (e.target.hasAttribute('title')) {
-            const title = e.target.getAttribute('title');
-            e.target.removeAttribute('title');
-            
-            const tooltip = document.getElementById('tooltip');
-            tooltip.textContent = title;
-            tooltip.style.display = 'block';
-            
-            const rect = e.target.getBoundingClientRect();
-            tooltip.style.top = `${rect.top - tooltip.offsetHeight - 5}px`;
-            tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
-            
-            e.target.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-                e.target.setAttribute('title', title);
-            }, {once: true});
+    // Function to handle file upload
+    function handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.match('image.*')) {
+            alert('Please upload an image file');
+            return;
         }
-    });
+        
+        const reader = new FileReader();
+        reader.onload = function(loadEvent) {
+            const img = new Image();
+            img.onload = function() {
+                // Draw the image on the preview canvas
+                const canvas = document.getElementById('preview');
+                const ctx = canvas.getContext('2d');
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculate how to center and scale the image to fit in the 112x112 canvas
+                let scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+                let x = (canvas.width - img.width * scale) / 2;
+                let y = (canvas.height - img.height * scale) / 2;
+                
+                // Draw the image
+                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                
+                // Update the animation preview
+                updateLivePreview();
+            };
+            img.src = loadEvent.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    // Update live preview function
+    function updateLivePreview() {
+        const previewCanvas = document.getElementById('preview');
+        const animationCanvas = document.getElementById('previewAnimation');
+        const ctx = animationCanvas.getContext('2d');
+        
+        // Clear animation canvas
+        ctx.clearRect(0, 0, animationCanvas.width, animationCanvas.height);
+        
+        // Copy the original image
+        ctx.drawImage(previewCanvas, 0, 0);
+        
+        // Apply the selected animation class
+        const livePreview = document.getElementById('livePreview');
+        
+        // Remove all existing animation classes
+        const animationClasses = Object.keys(animationCategories).map(name => `${name}-preview`);
+        livePreview.classList.remove(...animationClasses);
+        
+        // Add the selected animation class
+        if (selectedAnimation && selectedAnimation !== 'none') {
+            livePreview.classList.add(`${selectedAnimation}-preview`);
+        }
+    }
     
     // Show values for range inputs
     document.getElementById('opacity').addEventListener('input', function() {
@@ -309,4 +352,25 @@ document.addEventListener('DOMContentLoaded', () => {
     fontLink.rel = 'stylesheet';
     fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap';
     document.head.appendChild(fontLink);
+    
+    // Set up tooltips
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.hasAttribute('title')) {
+            const title = e.target.getAttribute('title');
+            e.target.removeAttribute('title');
+            
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = title;
+            tooltip.style.display = 'block';
+            
+            const rect = e.target.getBoundingClientRect();
+            tooltip.style.top = `${rect.top - tooltip.offsetHeight - 5}px`;
+            tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
+            
+            e.target.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+                e.target.setAttribute('title', title);
+            }, {once: true});
+        }
+    });
 });
