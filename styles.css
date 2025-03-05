@@ -160,12 +160,16 @@ label {
     transition: all 0.3s;
 }
 
-.animation-option:hover {
-    background: #3d3d42;
-}
-
 .animation-option.selected {
     border-color: #9147ff;
+}
+
+#rainbowEffect.selected {
+    border-color: #9147ff;
+}
+
+.animation-option:hover {
+    background: #3d3d42;
 }
 
 .animation-preview {
