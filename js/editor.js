@@ -1,5 +1,4 @@
 // Image editor functionality
-
 function startImageEditor(image) {
     let isEditing = true;
     
