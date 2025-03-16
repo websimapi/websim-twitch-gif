@@ -1,5 +1,4 @@
 // Image editor functionality
-let isEditing = false;
 let currentTool = 'brush';
 let selectionStart = { x: 0, y: 0 };
 let selectionEnd = { x: 0, y: 0 };
@@ -11,7 +10,7 @@ let undoStack = [];
 let redoStack = [];
 
 function startImageEditor(image) {
-    isEditing = true;
+    let isEditing = true;
     
     // Show editor panel, hide other content
     document.getElementById('imageEditorPanel').style.display = 'block';
