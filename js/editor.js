@@ -1,6 +1,7 @@
 // Image editor functionality
 function startImageEditor(image) {
-    let isEditing = true;
+    // Note: Using the global isEditing variable instead of redeclaring it
+    isEditing = true;
     
     // Show editor panel, hide other content
     document.getElementById('imageEditorPanel').style.display = 'block';
