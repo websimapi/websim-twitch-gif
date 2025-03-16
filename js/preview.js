@@ -1,48 +1,64 @@
-import { getFrames, getImageSettings } from './image.js';
-import { getAnimationSettings } from './animation.js';
+// Preview and animation preview functions
+function updateLivePreview() {
+    const previewCanvas = document.getElementById('previewAnimation');
+    const ctx = previewCanvas.getContext('2d');
+    ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    if (frames.length === 0) return;
 
-let gifWorkerBlob;
-
-export function setupGifGeneration() {
-    // Fetch GIF Worker
-    fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js')
-        .then(response => response.blob())
-        .then(blob => {
-            gifWorkerBlob = blob;
-        });
-
-    document.getElementById('generateGif').onclick = generateGif;
+    const settings = getImageSettings();
+    
+    generateAccuratePreview(previewCanvas, settings);
 }
 
-async function generateGif() {
-    const frames = getFrames();
-    const settings = getImageSettings();
-    const { selectedAnimation, animationIntensity, animationSpeed, rainbowEffect } = getAnimationSettings();
-    
-    if (frames.length === 0) {
-        alert('Please upload some images first!');
-        return;
+async function generateAccuratePreview(previewCanvas, settings) {
+    if (!gifWorkerBlob) {
+        // Wait for GIF worker to be fetched
+        await new Promise(resolve => {
+            const checkWorker = () => {
+                if (gifWorkerBlob) {
+                    resolve();
+                } else {
+                    setTimeout(checkWorker, 100);
+                }
+            };
+            checkWorker();
+        });
     }
-
-    const fps = parseInt(document.getElementById('fps').value);
-    const quality = parseInt(document.getElementById('quality').value);
-    const duration = parseInt(document.getElementById('duration').value);
-    const totalFrames = fps * duration;
     
+    // Show loading indicator
+    const livePreview = document.getElementById('livePreview');
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'preview-loading';
+    loadingEl.innerHTML = '<div class="loading-spinner"></div>';
+    livePreview.appendChild(loadingEl);
+    
+    // Clean up any previous preview
+    if (previewGif) {
+        URL.revokeObjectURL(previewGif);
+        previewGif = null;
+    }
+    
+    // Set up temporary canvas for rendering frames
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = 112;
+    tempCanvas.height = 112;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Create a GIF instance for preview
     const gif = new GIF({
-        workers: 2,
-        quality,
+        workers: 1,
+        quality: 5, // Lower quality for preview
         width: 112,
         height: 112,
         workerScript: URL.createObjectURL(gifWorkerBlob),
         transparent: settings.backgroundColor ? null : 0x00000000
     });
-
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = 112;
-    tempCanvas.height = 112;
-    const tempCtx = tempCanvas.getContext('2d');
-
+    
+    // Generate a few frames for preview
+    const fps = 10; // Lower fps for preview
+    const previewDuration = 1; // 1 second preview
+    const totalFrames = fps * previewDuration;
+    
     for (let frameNum = 0; frameNum < totalFrames; frameNum++) {
         const progress = frameNum / totalFrames;
         
@@ -704,89 +720,78 @@ async function generateGif() {
                     // Draw the frame
                     tempCtx2.drawImage(bmp, 0, 0);
                     
+                    // Get image data
+                    const imageData = tempCtx2.getImageData(0, 0, tempCanvas2.width, tempCanvas2.height);
+                    const data = imageData.data;
+                    
+                    // Apply hue rotation manually to each pixel
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i + 3] > 0) { // Only process non-transparent pixels
+                            // Convert RGB to HSL
+                            const r = data[i] / 255;
+                            const g = data[i + 1] / 255;
+                            const b = data[i + 2] / 255;
+                            
+                            const max = Math.max(r, g, b);
+                            const min = Math.min(r, g, b);
+                            let h, s, l = (max + min) / 2;
+                            
+                            if (max === min) {
+                                h = s = 0; // achromatic
+                            } else {
+                                const d = max - min;
+                                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                                
+                                switch (max) {
+                                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                                    case g: h = (b - r) / d + 2; break;
+                                    case b: h = (r - g) / d + 4; break;
+                                }
+                                
+                                h /= 6;
+                            }
+                            
+                            // Rotate hue
+                            h = (h + (progress * 360) / 360) % 1;
+                            
+                            // Convert back to RGB
+                            let r1, g1, b1;
+                            
+                            if (s === 0) {
+                                r1 = g1 = b1 = l; // achromatic
+                            } else {
+                                const hue2rgb = (p, q, t) => {
+                                    if (t < 0) t += 1;
+                                    if (t > 1) t -= 1;
+                                    if (t < 1/6) return p + (q - p) * 6 * t;
+                                    if (t < 1/2) return q;
+                                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                                    return p;
+                                };
+                                
+                                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                                const p = 2 * l - q;
+                                
+                                r1 = hue2rgb(p, q, h + 1/3);
+                                g1 = hue2rgb(p, q, h);
+                                b1 = hue2rgb(p, q, h - 1/3);
+                            }
+                            
+                            // Put back into data array
+                            data[i] = Math.round(r1 * 255);
+                            data[i + 1] = Math.round(g1 * 255);
+                            data[i + 2] = Math.round(b1 * 255);
+                        }
+                    }
+                    
+                    // Put the modified image data back
+                    tempCtx2.putImageData(imageData, 0, 0);
+                    
+                    // Draw to main canvas
                     return tempCanvas2.toDataURL();
                 });
                 
-                const hueRotation = (progress * 360) % 360;
-                
-                // Create a temporary canvas to apply the hue-rotate
-                const effectCanvas = document.createElement('canvas');
-                effectCanvas.width = effectiveWidth;
-                effectCanvas.height = effectiveHeight;
-                const effectCtx = effectCanvas.getContext('2d');
-                
-                // Draw the frame
-                effectCtx.drawImage(frame, 0, 0, effectiveWidth, effectiveHeight);
-                
-                // Get image data
-                const imageData = effectCtx.getImageData(0, 0, effectiveWidth, effectiveHeight);
-                const data = imageData.data;
-                
-                // Apply hue rotation manually to each pixel
-                for (let i = 0; i < data.length; i += 4) {
-                    if (data[i + 3] > 0) { // Only process non-transparent pixels
-                        // Convert RGB to HSL
-                        const r = data[i] / 255;
-                        const g = data[i + 1] / 255;
-                        const b = data[i + 2] / 255;
-                        
-                        const max = Math.max(r, g, b);
-                        const min = Math.min(r, g, b);
-                        let h, s, l = (max + min) / 2;
-                        
-                        if (max === min) {
-                            h = s = 0; // achromatic
-                        } else {
-                            const d = max - min;
-                            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                            
-                            switch (max) {
-                                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                                case g: h = (b - r) / d + 2; break;
-                                case b: h = (r - g) / d + 4; break;
-                            }
-                            
-                            h /= 6;
-                        }
-                        
-                        // Rotate hue
-                        h = (h + hueRotation / 360) % 1;
-                        
-                        // Convert back to RGB
-                        let r1, g1, b1;
-                        
-                        if (s === 0) {
-                            r1 = g1 = b1 = l; // achromatic
-                        } else {
-                            const hue2rgb = (p, q, t) => {
-                                if (t < 0) t += 1;
-                                if (t > 1) t -= 1;
-                                if (t < 1/6) return p + (q - p) * 6 * t;
-                                if (t < 1/2) return q;
-                                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                                return p;
-                            };
-                            
-                            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                            const p = 2 * l - q;
-                            
-                            r1 = hue2rgb(p, q, h + 1/3);
-                            g1 = hue2rgb(p, q, h);
-                            b1 = hue2rgb(p, q, h - 1/3);
-                        }
-                        
-                        // Put back into data array
-                        data[i] = Math.round(r1 * 255);
-                        data[i + 1] = Math.round(g1 * 255);
-                        data[i + 2] = Math.round(b1 * 255);
-                    }
-                }
-                
-                // Put the modified image data back
-                effectCtx.putImageData(imageData, 0, 0);
-                
-                // Draw to main canvas
-                tempCtx.drawImage(effectCanvas, x, y, effectiveWidth, effectiveHeight);
+                tempCtx.drawImage(frameImage, x, y, effectiveWidth, effectiveHeight);
             } else {
                 // Normal drawing without rainbow effect
                 tempCtx.drawImage(frame, x, y, effectiveWidth, effectiveHeight);
@@ -800,18 +805,40 @@ async function generateGif() {
             });
         });
     }
-
+    
+    // Create and display the preview GIF
     gif.on('finished', blob => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'twitch-emote.gif';
-        link.click();
+        // Remove loading indicator
+        loadingEl.remove();
         
-        setTimeout(() => {
-            URL.revokeObjectURL(url);
-        }, 1000);
+        // Create a URL for the generated GIF
+        previewGif = URL.createObjectURL(blob);
+        
+        // Display the GIF in an image element
+        const previewImg = new Image();
+        previewImg.src = previewGif;
+        previewImg.width = 112;
+        previewImg.height = 112;
+        previewImg.style.position = 'absolute';
+        previewImg.style.top = '0';
+        previewImg.style.left = '0';
+        
+        // Clear the preview canvas and append the image
+        const livePreview = document.getElementById('livePreview');
+        while (livePreview.firstChild) {
+            if (livePreview.firstChild !== previewCanvas) {
+                livePreview.removeChild(livePreview.firstChild);
+            } else {
+                break;
+            }
+        }
+        livePreview.appendChild(previewImg);
     });
-
+    
     gif.render();
+}
+
+function drawPreview(frame) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
 }

@@ -1,8 +1,5 @@
-export function setupAIGeneration() {
-    document.getElementById('generateImage').addEventListener('click', generateAIImage);
-}
-
-async function generateAIImage() {
+// AI image generation functionality
+document.getElementById('generateImage').addEventListener('click', async () => {
     const prompt = document.getElementById('imagePrompt').value.trim();
     const aspectRatio = document.getElementById('aspectRatio').value;
     const advancedMode = document.getElementById('advancedMode').checked;
@@ -67,4 +64,4 @@ async function generateAIImage() {
         console.error('Error generating image:', error);
         statusElement.textContent = `Error: ${error.message || 'Failed to generate image'}`;
     }
-}
+});

@@ -1,7 +1,4 @@
-import { drawPreview, getFrames, setFrames } from './image.js';
-import { updateLivePreview } from './animation.js';
-
-// Image editor variables
+// Image editor functionality
 let isEditing = false;
 let currentTool = 'brush';
 let selectionStart = { x: 0, y: 0 };
@@ -13,11 +10,7 @@ let brushColor = '#ffffff';
 let undoStack = [];
 let redoStack = [];
 
-export function setupEditorControls() {
-    // No initialization needed here, as editor is activated on demand
-}
-
-export function startImageEditor(image) {
+function startImageEditor(image) {
     isEditing = true;
     
     // Show editor panel, hide other content
@@ -560,7 +553,7 @@ async function finishEditing(canvas) {
     const newFrame = await createImageBitmap(blob);
     
     // Replace the current frame
-    setFrames([newFrame]);
+    frames[0] = newFrame;
     
     // Update preview
     drawPreview(newFrame);
