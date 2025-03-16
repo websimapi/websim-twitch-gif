@@ -1,13 +1,4 @@
 // Image editor functionality
-let currentTool = 'brush';
-let selectionStart = { x: 0, y: 0 };
-let selectionEnd = { x: 0, y: 0 };
-let isSelecting = false;
-let selectedArea = null;
-let brushSize = 5;
-let brushColor = '#ffffff';
-let undoStack = [];
-let redoStack = [];
 
 function startImageEditor(image) {
     let isEditing = true;
