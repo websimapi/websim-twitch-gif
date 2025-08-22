@@ -287,7 +287,7 @@ label {
 .flip-3d-preview::after { animation: flip3D 2s ease-in-out infinite; }
 .thunder-preview::after { animation: thunder 2s ease-in-out infinite; }
 .tv-static-preview::after { animation: tvStatic 0.5s step-end infinite; }
-.flip-coin-preview::after { animation: flipCoin 2s linear infinite; background: radial-gradient(circle at center, #ffd700, #b8860b); border-radius: 50%; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
+.flip-coin-preview::after { animation: flipCoin 2s linear infinite; }
 .matrix-preview::after { animation: matrix 1.5s step-end infinite; }
 .meteor-preview::after { animation: meteor 2s linear infinite; }
 .pendulum-wave-preview::after { animation: pendulumWave 3s ease-in-out infinite; }
@@ -1190,18 +1190,11 @@ textarea#imagePrompt {
 }
 
 @keyframes flipCoin {
-    0% { transform: rotateY(0) perspective(800px); box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
-    25% { transform: rotateY(90deg) perspective(800px); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-    50% { transform: rotateY(180deg) perspective(800px); box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
-    75% { transform: rotateY(270deg) perspective(800px); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-    100% { transform: rotateY(360deg) perspective(800px); box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
-}
-
-.flip-coin-preview::after { 
-    animation: flipCoin 2s linear infinite; 
-    background: radial-gradient(circle at center, #ffd700, #b8860b);
-    border-radius: 50%;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+    0% { transform: rotateY(0); }
+    25% { transform: rotateY(90deg); }
+    50% { transform: rotateY(180deg); }
+    75% { transform: rotateY(270deg); }
+    100% { transform: rotateY(360deg); }
 }
 
 @keyframes matrix {
